@@ -1,0 +1,14 @@
+{
+  "name": "node-capstone",
+  "version": "1.0.0",
+  "description": "Node capstone project for Thinkful",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Chad Avalon",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
+}
