@@ -1,2 +1,9 @@
 language: node_js
 node_js: node
+deploy:
+  provider: heroku
+  api_key:
+    secure: gxqvytzgkXe6IhMOIA8OogiPy918p5Ww7bxB6gU+FI0KWHYjQq/RmwqT9WlsU0BO8BsuCJ5WyN30XgsPE00JlC9Mwa1Y6QWCMa9oYaSs+qqxcafCAXj1tR5iHseZSptEmUe9gVRCr8GeBLzHbRrsFJ+v84hvcpSlYayt2Rv7HF1LVFOGhiBYHtuNOuZREmYDYPtsVk0ZQHbSZadN3NdRNgNWMYf4Q/tMnLOU7wk0coEdbjX77BWpRKXXkjJ31QDX4X/BECGpwrvqgatJuLsi7gnrs9/wi2AT8Ac0yUX1um5lTVZNoSHybiGbNmHeGdZKY4mfBeFCGngDmkf4s968GlVl6x/bedaL4OjnH9ud1feybFLHAjh5PqYd6rT68Q6VOz4sOsDj2LqFzlWeH3GeuI2/Gl765RmjZ92ttOxMojySq+sFHCC4X9VGds9sT+q1ip23RFV2kqm1ZqM/U0RxL68obr7Sr2c1z10s5u6SFzANsSkpRS21tzn5cmBg+p/jBkng176/btYE0E2D1SFMNIIDGVAlWf5pExZALn/I1YNkKFIF8x+fTsnZ9fRS3LPkUpXeODFX0gSjssdrfarL2WlonS9SPvXZ23CfGKpw6xQ5+X5pVfZiMpMDBPt/oC0yzymjh+d0ueEWrnIF0kiUiDUoMees/7p9vLsCW+iwD4M=
+  app: intense-ravine-62468
+  on:
+    repo: cavaloni/Transcriptor
