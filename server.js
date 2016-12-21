@@ -3,13 +3,6 @@ var app = express();
 
 app.use(express.static('public'));
 
-const server =  app.listen(process.env.PORT || 8080);
+app.listen(process.env.PORT || 8080);
 
-
-
-if (require.main === module) {
-  server().catch(err => console.error(err));
-};
-
-
-module.exports = server;
+exports.app = app;
