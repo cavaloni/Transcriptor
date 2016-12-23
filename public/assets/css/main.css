@@ -70,8 +70,29 @@
     background-color: white;
 }
 
-
 form {
     position: relative;
     top: 20px;
+}
+
+.sign-up-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.signup-box {
+    position: absolute;
+    top: 200px;
+    left: calc(50% - 50px);
+    border: 2px solid black;
+    height: 160px;
+    width: 200px;
+}
+
+.sign-in-button {
+    margin-top: 30px;
 }

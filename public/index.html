@@ -2,36 +2,48 @@
 <html>
 
 <head>
-       <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Normalize.css, a cross-browser reset file -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css">
     <title>Transcriptor. A tool for collaborative transcription database entry.</title>
 </head>
+
 <body>
+    <div class="sign-up-page">
+        <div class="top-bar">Transcriptor</div>
+        <div class="signup-box">
+            <form action="#" class="sign-in-form">
+                <input type="text" id="email">
+                <label for="email">Email</label>
+                <input type="text" id="password">
+                <label for="password">Password</label>
+                </form>
+                <button type="submit" class="sign-in-button">Sign In</button>
+        </div>
+    </div>
 
-<div class="top-bar">Transcriptor</div>
 
-<ul class="nav-bar">
-    <li id='search'>Search</li>
-    <li id='upload'>Upload</li>
-    <li id='my-uploads'>My Uploads</li>
-    <li id='recent-uploads'>Recent Uploads</li>
-    <li id='help'>Help</li>
-</ul>
-
-<div class="search-bar hidden">
-    <form action="#" class="search-from">
-        <input type="text">
-        <button type="submit" class="js-first-search-button">Search</button>
-    </form>
-</div>
-
-<div class="recent">Recent Uploads</div>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="assets/js/app.js"></script>
+    <div class="app-wrapper hidden">
+        <div class="top-bar">Transcriptor</div>
+        <ul class="nav-bar">
+            <li id='search'>Search</li>
+            <li id='upload'>Upload</li>
+            <li id='my-uploads'>My Uploads</li>
+            <li id='recent-uploads'>Recent Uploads</li>
+            <li id='help'>Help</li>
+        </ul>
+        <div class="search-bar hidden">
+            <form action="#" class="search-from">
+                <input type="text">
+                <button type="submit" class="js-first-search-button">Search</button>
+            </form>
+        </div>
+        <div class="recent">Recent Uploads</div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="assets/js/app.js"></script>
 </body>
 
 </html>
