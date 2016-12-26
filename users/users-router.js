@@ -1,7 +1,7 @@
 const {BasicStrategy} = require('passport-http');
 const express = require('express');
 const jsonParser = require('body-parser').json();
-const passport = require('passport');
+
 
 const {User} = require('./models');
 
@@ -9,41 +9,7 @@ const router = express.Router();
 
 router.use(jsonParser);
 
-
-var strategy = new BasicStrategy(function(username, password, callback) {
-    User.findOne({
-        username: username
-    }, function (err, user) {
-        if (err) {
-            callback(err);
-            return;
-        }
-
-        if (!user) {
-            return callback(null, false, {
-                message: 'Incorrect username.'
-            });
-        }
-
-        user.validatePassword(password, function(err, isValid) {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!isValid) {
-                return callback(null, false, {
-                    message: 'Incorrect password.'
-                });
-            }
-            return callback(null, user);
-        });
-    });
-});
-
-passport.use(strategy);
-
-
-//------New login
+//------New user
 router.post('/users', function (req, res) {
     console.log(`Request Body : ${req.body}`);
     if (!req.body) {
@@ -123,6 +89,6 @@ return User
 });
 
 
-router.use(passport.initialize());
+
 
 module.exports = router;

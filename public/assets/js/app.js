@@ -43,7 +43,7 @@ function renderRecent() {
 $('.sign-in-button').click(function () {
     $('.sign-up-page').empty();
     $('.app-wrapper').removeClass('hidden');
-    renderRecent();
+    loginUser();
 })
 
 $('#search').on('click', function (e) {
@@ -72,6 +72,28 @@ $('.sign-up').on('click', function() {
 })
 
 //-------
+
+function loginUser () {
+    let pWord = $('#password').val();
+    let uName = $('#username').val();
+    $.ajax({
+        type: "GET",
+        contentType: 'application/json; charset=utf-8',
+        processData: false,
+        dataType: 'text',
+        url: '/login',
+        data : {"password": `"${pWord}"`,
+        "username": `"${uName}"`
+        }
+    }
+    )
+        .done(function (msg) {
+            alert(`worked: ${msg}`);
+            renderRecent();
+        })
+        .fail(function (err){
+        alert(`error ${err}`)
+}
 
 function renderSignUpPage() {
     $('.sign-up-page').empty();

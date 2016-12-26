@@ -1,4 +1,3 @@
-
 const bodyParser = require('body-parser');
 
 const {router: usersRouter}  = require('./users');
@@ -15,9 +14,9 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 
-app.use('./users/', usersRouters);
+app.use('/users/', usersRouters);
 
-app.use('./transcriptions', transRouters);
+app.use('/transcriptions', transRouters);
 
 
 function runServer () { 

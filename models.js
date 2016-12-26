@@ -15,7 +15,8 @@ transcriptionSchema.methods.apiRepr = function () {
         docText: this.docText,
         date: this.date,
         dateUploaded: this.dateUploaded,
-        sessionNumber: this.sessionNumber
+        sessionNumber: this.sessionNumber,
+        uploadedBy: this.uploadedBy
     };
 }
 
