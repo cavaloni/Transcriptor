@@ -53,6 +53,5 @@ describe ('GET Resource', function () {
             resTranscription = res.body.transcriptions[0];
             return Restaurant.findById
             })
-        }))
-    })
-})
+        });
+});

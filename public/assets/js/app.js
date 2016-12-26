@@ -67,7 +67,53 @@ $('#help').on('click', function () {
     renderHelpBox();
 })
 
+$('.sign-up').on('click', function() {
+    renderSignUpPage();
+})
+
 //-------
+
+function renderSignUpPage() {
+    $('.sign-up-page').empty();
+    let signUpPage = `<div class="new-signup-box">
+            <form action="#" class="sign-up-form">
+                <input type="text" id="new-username">
+                <label for="username">Username</label>
+                <input type="text" id="new-password">
+                <label for="password">Password</label>
+                </form>
+                <button type="submit" class="new-sign-in-button">Sign Up</button>
+        </div>`
+    $('.sign-up-page').append(signUpPage);
+    $('.sign-up-page').on('click', '.new-sign-in-button', function (){
+        handleNewUser();
+    })
+}
+
+function handleNewUser () {
+    let pWord = $('#new-password').val();
+    let uName = $('#new-username').val();
+    console.log(uName);
+    console.log(pWord);
+    $.ajax({
+        type: "POST",
+        contentType: 'application/json; charset=utf-8',
+        processData: false,
+        dataType: 'text',
+        url: '/users',
+        data : {"password": `"${pWord}"`,
+        "username": `"${uName}"`
+        }
+    }
+    )
+        .done(function (msg) {
+            alert(`User saved: ${msg}`)
+        })
+        .fail(function (err){
+        alert(`error ${err}`)
+    });
+}
+
 
 function renderMyUploads() {
     hideSearch();
