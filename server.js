@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const {router: usersRouter}  = require('./users');
 const mongoose = require('mongoose');
 const {router: transRouter} = require('./trans-router')
+const express = require('express');
+
 
 mongoose.Promise = global.Promise;
 
@@ -14,10 +16,11 @@ app.use(express.static('public'));
 app.use(bodyParser.json());
 
 
-app.use('/users/', usersRouters);
+app.use('/users/', usersRouter);
 
-app.use('/transcriptions', transRouters);
+app.use('/transcriptions', transRouter);
 
+let server;
 
 function runServer () { 
     return new Promise((resolve, reject) => {

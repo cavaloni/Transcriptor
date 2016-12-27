@@ -1,3 +1,4 @@
+const {BasicStrategy} = require('passport-http');
 const express = require('express');
 const Transcriptions = require('./models');
 
@@ -86,6 +87,7 @@ router.post('/:userid', (req, res) => {
     Transcriptions
         .create ({
             name : req.body.name,
+            uploadedBy: req.params.userid,
             docText: req.body.docText,
             date: req.body.date,
             dateUploaded: req.body.dateUploaded,
@@ -98,8 +100,26 @@ router.post('/:userid', (req, res) => {
     });
 })
 
-
+router.put('/:id',  (req, res) => {
+    if (!(req.params.id === req.body.id)) {
+        res.status(400).json({
+            error: 'Request path id and request body id values must match'
+        });
+    }
+    const update = {};
+    const updatableFields = ['name', 'docText', 'date', 'sessionNumber'];
+    updatableFields.forEach(field => {
+        if(field in req.body) {
+            update[field] = req.body[field];
+        }
+    });
+    Transcriptions
+        .findByIdAndUpdate(req.params.id, {$set: update}, {new: true})
+        .exec()
+        .then(updatedTrans => res.status(201).json(updatedTrans.apiRepr()))
+        .catch(err => res.status(500).json({message: 'Something went wrong'}));
+});
 
 router.use(passport.initialize());
 
-module.exports = router;
+module.exports = {router};
