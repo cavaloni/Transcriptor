@@ -142,4 +142,23 @@ describe('Transcriptor API resource', function () {
         });
     });
 
+    describe('DELETE resource for transcriptions', function() {
+        it('Should remove transcriptions on DELETE', function () {
+            let transcriptionTD;
+            return Transcriptions
+                .findOne()
+                .then(function (transctiption)  {
+                    transcriptionTD = transcription;
+                    return chai.request(app).delete(`/transcriptions/${transcriptionTD.id}`);
+                })
+                .then(function(res) {
+                    res.should.have.status(204);
+                    return Transcriptions.findById(transcriptionTD.id);
+                })
+                .then(function (transciption) {
+                    should.not.exist(transciption)
+                });
+        });
+    });
+
 });

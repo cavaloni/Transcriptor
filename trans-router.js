@@ -120,6 +120,16 @@ router.put('/:id',  (req, res) => {
         .catch(err => res.status(500).json({message: 'Something went wrong'}));
 });
 
+router.delete('./:id', (req, res) => {
+    Transcriptions
+        .findByIdAndRemove(req.params.id)
+        .exec()
+        .then(() => {
+        console.log(`Deleted Post with id \"${req.params.id}\"`);
+        res.status(204).end();
+        });
+});
+
 router.use(passport.initialize());
 
 module.exports = {router};
