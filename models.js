@@ -5,7 +5,8 @@ const transcriptionSchema = mongoose.Schema ({
     docText: {type: String, required: true},
     date: {type: Date, required: true},
     dateUploaded: {type: Date, required: true},
-    sessionNumber: {type: String, required: true}
+    sessionNumber: {type: Number, required: true},
+    uploadedBy: {type: String, required: true}
 });
 
 transcriptionSchema.methods.apiRepr = function () {
@@ -23,3 +24,4 @@ transcriptionSchema.methods.apiRepr = function () {
 const Transcriptions = mongoose.model('Transcriptions', transcriptionSchema);
 
 module.exports = {Transcriptions};
+

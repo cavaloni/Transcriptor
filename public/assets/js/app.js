@@ -93,6 +93,7 @@ function loginUser () {
         })
         .fail(function (err){
         alert(`error ${err}`)
+        })
 }
 
 function renderSignUpPage() {
