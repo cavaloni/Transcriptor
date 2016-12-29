@@ -1,3 +1,5 @@
+require('@risingstack/trace');
+
 const bodyParser = require('body-parser');
 
 const {router: usersRouter}  = require('./users');

@@ -2,6 +2,7 @@ const {BasicStrategy} = require('passport-http');
 const express = require('express');
 const {Transcriptions} = require('./models');
 const User = require('./users/user-models');
+const session = require('express-session');
 
 const jsonParser = require('body-parser').json();
 const passport = require('passport');
@@ -9,6 +10,14 @@ const passport = require('passport');
 const router = express.Router();
 
 router.use(jsonParser);
+
+router.use(session({ secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+ }));
+
+
 
 const basicStrategy = new BasicStrategy(function(username, password, callback) {
   let user;
@@ -34,6 +43,7 @@ const basicStrategy = new BasicStrategy(function(username, password, callback) {
 
 passport.use(basicStrategy);
 router.use(passport.initialize());
+router.use(passport.session());
 
 router.get('/', 
     passport.authenticate('basic', {session: true}),

@@ -15,17 +15,6 @@ function generateName () {
     return faker.name.firstName();
 }
 
-// function generatePassHash () {
-//     let pass = faker.name.firstName();
-//     let hashedPass;
-//     bcrypt
-//     .hash(pass, 10)
-//     .then((hash) => {
-//         hashedPass = hash;
-//     });
-//     return hashedPass
-// }
-
 function generateText () {
     return faker.lorem.paragraphs();
 }
@@ -260,7 +249,9 @@ describe('Transcriptor API resource', function () {
                 .post('/users/login')
                 .auth('henry', 'johnson123')
                 .then((res) => {
+                    console.log(res.body);
                     res.should.be.json;
+
                 });
         });
     });
