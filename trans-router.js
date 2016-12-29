@@ -10,37 +10,29 @@ const router = express.Router();
 
 router.use(jsonParser);
 
-var strategy = new BasicStrategy(function (username, password, callback) {
-    User.findOne({
-        username: username
-    }, function (err, user) {
-        if (err) {
-            callback(err);
-            return;
-        }
-
-        if (!user) {
-            return callback(null, false, {
-                message: 'Incorrect username.'
-            });
-        }
-
-        user.validatePassword(password, function (err, isValid) {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!isValid) {
-                return callback(null, false, {
-                    message: 'Incorrect password.'
-                });
-            }
-            return callback(null, user);
-        });
+const basicStrategy = new BasicStrategy(function(username, password, callback) {
+  let user;
+  User
+    .findOne({username: username})
+    .exec()
+    .then(_user => {
+      user = _user;
+      if (!user) {
+        return callback(null, false, {message: 'Incorrect username'});
+      }
+      return user.validatePassword(password);
+    })
+    .then(isValid => {
+      if (!isValid) {
+        return callback(null, false, {message: 'Incorrect password'});
+      }
+      else {
+        return callback(null, user)
+      }
     });
 });
 
-passport.use(strategy);
+passport.use(basicStrategy);
 router.use(passport.initialize());
 
 router.get('/', 
@@ -79,7 +71,7 @@ router.get('/:userid', (req, res) => {
             });
     })
 
-router.post('/:id', (req, res) => {
+router.post('/', (req, res) => {
     const requiredFields = ['name', 'docText', 'date', 'dateUploaded', 'sessionNumber'];
     requiredFields.forEach(field => {
         if (!(field in req.body)) {

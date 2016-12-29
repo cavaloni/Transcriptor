@@ -106,8 +106,9 @@ describe('Transcriptor API resource', function () {
 
     describe('Transcription API resource', function () {
         it('should return status 200 on start', function () {
-            return chai.request(app)
+            return chai.request(app)                
                 .get('/transcriptions')
+                .auth('henry', 'johnson123')
                 .send({
                     username: 'henry',
                     password: 'johnson123'    
@@ -122,6 +123,7 @@ describe('Transcriptor API resource', function () {
         it('should return all transcriptions in databse on GET', function () {
             return chai.request(app)
                 .get('/transcriptions')
+                .auth('henry', 'johnson123')
                 .then(function (res) {
                     res.should.have.status(200);
                     res.should.be.json;
@@ -138,6 +140,7 @@ describe('Transcriptor API resource', function () {
         it('should return transcriptions with the right fields', function () {
             return chai.request(app)
                 .get('/transcriptions')
+                .auth('henry', 'johnson123')
                 .then(function (res) {
                     res.should.have.status(200);
                     res.should.be.json;
@@ -177,7 +180,7 @@ describe('Transcriptor API resource', function () {
                     res.body.docText.should.equal(newTranscription.docText);
                     res.body.sessionNumber.should.equal(newTranscription.sessionNumber);
                     return Transcriptions.findById(res.body.id)
-                        .exec();
+                    .exec();
                 })
                 .then(function (transcription) {
                     transcription.name.should.equal(newTranscription.name);
@@ -255,15 +258,9 @@ describe('Transcriptor API resource', function () {
         it('should login a user', function () {
             return chai.request(app)
                 .post('/users/login')
-                .send({
-                    username: 'henry',
-                    password: 'johnson123'    
-                })
+                .auth('henry', 'johnson123')
                 .then((res) => {
-                    res.redirects.length.should.eql(0);
-                    res.status.should.eql(200);
-                    res.type.should.eql('application/json');
-                    res.body.status.should.eql('success');
+                    res.should.be.json;
                 });
         });
     });

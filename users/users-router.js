@@ -9,37 +9,39 @@ const router = express.Router();
 
 router.use(jsonParser);
 
-var strategy = new BasicStrategy(function (username, password, callback) {
-    User.findOne({
-        username: username
-    }, function (err, user) {
-        if (err) {
-            callback(err);
-            return;
-        }
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
 
-        if (!user) {
-            return callback(null, false, {
-                message: 'Incorrect username.'
-            });
-        }
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
 
-        user.validatePassword(password, function (err, isValid) {
-            if (err) {
-                return callback(err);
-            }
-
-            if (!isValid) {
-                return callback(null, false, {
-                    message: 'Incorrect password.'
-                });
-            }
-            return callback(null, user);
-        });
+const basicStrategy = new BasicStrategy(function(username, password, callback) {
+  let user;
+  User
+    .findOne({username: username})
+    .exec()
+    .then(_user => {
+      user = _user;
+      if (!user) {
+        return callback(null, false, {message: 'Incorrect username'});
+      }
+      return user.validatePassword(password);
+    })
+    .then(isValid => {
+      if (!isValid) {
+        return callback(null, false, {message: 'Incorrect password'});
+      }
+      else {
+        return callback(null, user)
+      }
     });
 });
 
-passport.use(strategy);
+passport.use(basicStrategy);
 router.use(passport.initialize());
 
 
@@ -134,11 +136,8 @@ function handleResponse(res, code, statusMsg) {
 
 router.post('/login', 
     passport.authenticate('basic', {session: true}), 
-    (req, res) => {
-    if (err) { handleResponse(res, 500, 'error'); }
-    if (!user) { handleResponse(res, 404, 'User not found'); }
-    if (user) { handleResponse(res, 200, 'success'); }
-  });
+  (req, res) => res.json({user: req.user})
+);
 
 
 
