@@ -5,6 +5,8 @@ const {app, runServer, closeServer} = require('../server');
 const should = chai.should();
 const faker = require('faker');
 const {Transcriptions} = require('../models');
+const {User} = require('../users/index.js');
+const bcrypt = require('bcrypt');
 
 
 chai.use(chaiHttp);
@@ -12,6 +14,17 @@ chai.use(chaiHttp);
 function generateName () {
     return faker.name.firstName();
 }
+
+// function generatePassHash () {
+//     let pass = faker.name.firstName();
+//     let hashedPass;
+//     bcrypt
+//     .hash(pass, 10)
+//     .then((hash) => {
+//         hashedPass = hash;
+//     });
+//     return hashedPass
+// }
 
 function generateText () {
     return faker.lorem.paragraphs();
@@ -25,7 +38,17 @@ function generateNumber () {
     return faker.random.number();
 }
 
-
+function seedUser() {
+    console.log('seeding user data');
+    const salt = bcrypt.genSaltSync();
+    const hash = bcrypt.hashSync('johnson123', salt);
+    let user ={
+            username: 'henry',
+            password: hash
+        }; 
+    console.log(user);       
+    return User.create(user);
+}
 
 function generateTranscriptionData () {
     return {
@@ -69,6 +92,10 @@ describe('Transcriptor API resource', function () {
         return seedTransData();
     });
 
+    beforeEach(function () {
+        return seedUser();
+    })
+
     after(function () {
         return closeServer();
     });
@@ -81,6 +108,10 @@ describe('Transcriptor API resource', function () {
         it('should return status 200 on start', function () {
             return chai.request(app)
                 .get('/transcriptions')
+                .send({
+                    username: 'henry',
+                    password: 'johnson123'    
+                })
                 .then(function (res) {
                     res.should.have.status(200);
                 });
@@ -108,7 +139,6 @@ describe('Transcriptor API resource', function () {
             return chai.request(app)
                 .get('/transcriptions')
                 .then(function (res) {
-                    console.log(res.body);
                     res.should.have.status(200);
                     res.should.be.json;
                     res.body.should.be.a('array');
@@ -203,6 +233,37 @@ describe('Transcriptor API resource', function () {
                 })
                 .then(function (transciption) {
                     should.not.exist(transciption)
+                });
+        });
+    });
+
+    describe('POST endpoint to store new userrs at /users', () => {
+        it('should register a new user', function() {
+            return chai.request(app)
+                .post('/users')
+                .send({
+                    username: 'buttface',
+                    password: 'mcgee'
+                })
+                .then((res) => {                    
+                    res.status.should.eql(201);
+                });
+        });
+    });
+
+    describe('POST endpoint to log users in at /users/login', () => {
+        it('should login a user', function () {
+            return chai.request(app)
+                .post('/users/login')
+                .send({
+                    username: 'henry',
+                    password: 'johnson123'    
+                })
+                .then((res) => {
+                    res.redirects.length.should.eql(0);
+                    res.status.should.eql(200);
+                    res.type.should.eql('application/json');
+                    res.body.status.should.eql('success');
                 });
         });
     });
