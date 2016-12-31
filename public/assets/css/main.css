@@ -87,7 +87,7 @@ form {
 .signup-box, .new-signup-box {
     position: absolute;
     top: 200px;
-    left: calc(50% - 50px);
+    left: calc(50% - 100px);
     border: 2px solid black;
     height: 160px;
     width: 200px;
@@ -99,9 +99,19 @@ form {
 
 .sign-up {
     position: relative;
-    bottom: -40px;
+    top: 40px;
+    text-align: center;
 }
 
 .sign-up:hover {
     cursor: pointer;
+}
+
+.logged-in {
+    text-align: right;
+    margin-bottom: 20px;
+    font-size: 15px;
+    bottom: 21px;
+    right: 50px;
+    position: relative;
 }

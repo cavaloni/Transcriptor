@@ -1,48 +1,19 @@
-const {BasicStrategy} = require('passport-http');
+
 const express = require('express');
 const jsonParser = require('body-parser').json();
 const passport = require('passport');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
 const User = require('./user-models');
 
 const router = express.Router();
 
+
+
 router.use(jsonParser);
 
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
 
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
-const basicStrategy = new BasicStrategy(function(username, password, callback) {
-  let user;
-  User
-    .findOne({username: username})
-    .exec()
-    .then(_user => {
-      user = _user;
-      if (!user) {
-        return callback(null, false, {message: 'Incorrect username'});
-      }
-      return user.validatePassword(password);
-    })
-    .then(isValid => {
-      if (!isValid) {
-        return callback(null, false, {message: 'Incorrect password'});
-      }
-      else {
-        return callback(null, user)
-      }
-    });
-});
-
-passport.use(basicStrategy);
-router.use(passport.initialize());
 
 
 //------New user
@@ -134,11 +105,13 @@ function handleResponse(res, code, statusMsg) {
   res.status(code).json({status: statusMsg});
 }
 
-router.post('/login', 
-    passport.authenticate('basic', {session: true}), 
-  (req, res) => res.json({user: req.user})
-);
-
+router.post('/login',  function(req, res, next) {
+    passport.authenticate('basic', function (err, account) {
+    req.logIn(account, function() {
+        res.status(err ? 500 : 200).send(err ? err : account);
+    });
+})(req, res, next)
+});
 
 
 module.exports = router;

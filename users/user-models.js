@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
-const bcrypt = require('bcrypt') ;
+const bcrypt = require('bcryptjs') ;
 
 const  UserSchema = new mongoose.Schema({
     username: {

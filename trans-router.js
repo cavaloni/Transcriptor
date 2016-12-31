@@ -11,60 +11,34 @@ const router = express.Router();
 
 router.use(jsonParser);
 
-router.use(session({ secret: 'keyboard cat',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }
- }));
+var isAuthenticated = function (req, res, next) {
+  console.log(req.isAuthenticated());
+  if (req.isAuthenticated())
+    return next();
+    console.log('not authenticated');
+}
 
-
-
-const basicStrategy = new BasicStrategy(function(username, password, callback) {
-  let user;
-  User
-    .findOne({username: username})
-    .exec()
-    .then(_user => {
-      user = _user;
-      if (!user) {
-        return callback(null, false, {message: 'Incorrect username'});
-      }
-      return user.validatePassword(password);
-    })
-    .then(isValid => {
-      if (!isValid) {
-        return callback(null, false, {message: 'Incorrect password'});
-      }
-      else {
-        return callback(null, user)
-      }
-    });
-});
-
-passport.use(basicStrategy);
-router.use(passport.initialize());
-router.use(passport.session());
-
-router.get('/', 
-    passport.authenticate('basic', {session: true}),
+router.get('/', isAuthenticated, 
     (req, res) => {
-        Transcriptions
-            .find()
-            .limit(10)
-            .exec()
-            .then(transcriptions => {
-                let foo = transcriptions.map( 
-                        (transcription) => transcription.apiRepr());
-                res.json(foo);
-            })
-            .catch(
-                err => {
-                    console.error(err);
-                    res.status(500).json({
-                        message: 'Internal Server Error'
-                    });
-                });
-    });
+                Transcriptions
+                    .find()
+                    .limit(10)
+                    .exec()
+                    .then(transcriptions => {
+                        let foo = transcriptions.map(
+                            (transcription) => transcription.apiRepr());
+                        console.log(foo);
+                        res.json(foo);
+                    })
+                    .catch(
+                        err => {
+                            console.error(err);
+                            res.status(500).json({
+                                message: 'My Internal Server Error'
+                            });
+                        });
+    }
+    );
 
 router.get('/:userid', (req, res) => {
         Transcriptions

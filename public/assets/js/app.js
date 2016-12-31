@@ -24,26 +24,16 @@ const MOCK_DATA = [{
     uploadedBy: 'John Smith'
 }];
 
+const state = {
+    loggedIn: ''
+};
 
-
-function renderRecent() {
-    //getRecentTranscripts();
-    $('.recent').empty();
-    let recentView = MOCK_DATA.map(function (data) {
-        return `<p>${data.name}</p>`
-    });
-    $('.recent').text('Recent Uploads')
-    recentView.forEach((data) => {
-        $('.recent').append(data);
-    });
-}
 //Event Listeners
 $('.sign-in-button').click(function (e) {
     e.preventDefault();
-    $('.sign-up-page').remove();
-    $('.app-wrapper').removeClass('hidden');
-    loginUser();
-    renderRecent();
+    var username =  $('#email').val();
+    var password = $('#password').val();
+    loginUser(username, password);
 })
 
 $('#search').on('click', function (e) {
@@ -74,11 +64,7 @@ $('.sign-up').on('click', function () {
 //-------
 
 function loginUser(username, password) {
-    if (username === undefined) {
-        username = 'Chad';
-        password = 'Avalon';
-    } 
-    console.log(username, password);
+    state.loggedIn = username;
     $.ajax({
             type: "POST",
             url: "http://localhost:8080/users/login",
@@ -88,13 +74,27 @@ function loginUser(username, password) {
             "data": "{\"username\": \"Chad\",\n\t\"password\": \"Avalon\"\n}"
              })
         .done(function (msg) {
-            alert(`worked: ${msg}`);
-            renderRecent();
+            renderDash();
         })
         .fail(function (err) {
-            alert(`error ${err}`)
+            renderFailedLogin();
         })
 }
+
+function renderFailedLogin () {  
+    let incorrectAlert = `<div class="incorrect">
+    Incorrect Username/Password</div>`
+    $('.signup-box').append(incorrectAlert);
+}
+
+
+function renderDash () {  
+    $('.sign-up-page').remove();
+    $('.app-wrapper').removeClass('hidden');
+    $('.logged-in').text(`Hello, ${state.loggedIn}`);
+    getRecentTranscripts();
+}
+
 
 function renderSignUpPage() {
     $('.sign-up-page').empty();
@@ -113,11 +113,34 @@ function renderSignUpPage() {
     })
 }
 
+function getRecentTranscripts () {
+    $.ajax({
+        type: "GET",
+        processData: false,
+        url: "http://localhost:8080/transcriptions",
+    })
+    .done(function (results) {
+        renderRecent(results)
+    })
+    .fail(function (err) {  
+        alert('yo shit broke:' + err);
+    });
+}
+
+function renderRecent(results) {
+    $('.recent').empty();
+    let recentView = results.map(function (data) {
+        return `<p>${data.name}</p>`
+    });
+    $('.recent').text('Recent Uploads')
+    recentView.forEach((data) => {
+        $('.recent').append(data);
+    });
+}
+
 function handleNewUser() {
     let pWord = $('#new-password').val();
     let uName = $('#new-username').val();
-    console.log(uName);
-    console.log(pWord);
     $.ajax({
             type: "POST",
             "processData": false,
@@ -129,7 +152,6 @@ function handleNewUser() {
             },
         })
         .done(function (msg) {
-            alert(`User saved: ${msg}`)
             loginUser(uName, pWord)
         })
         .fail(function (err) {

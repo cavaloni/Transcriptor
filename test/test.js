@@ -6,7 +6,7 @@ const should = chai.should();
 const faker = require('faker');
 const {Transcriptions} = require('../models');
 const {User} = require('../users/index.js');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 
 chai.use(chaiHttp);

@@ -13,6 +13,7 @@
     "bcrypt": "^1.0.1",
     "bcryptjs": "^2.4.0",
     "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
     "express-session": "^1.14.2",
     "mongoose": "^4.7.4",
