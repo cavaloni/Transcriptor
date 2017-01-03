@@ -61,6 +61,12 @@ router.post('/', function (req, res) {
         });
     }
 
+    if (password.length < 6 || password.length > 15) {
+        return res.status(422).json({
+            message: 'Password needs to be at least 6 characters and not more than 15'
+        });
+    }
+
     password = password.trim();
 
     if (password === '') {
@@ -105,12 +111,16 @@ function handleResponse(res, code, statusMsg) {
   res.status(code).json({status: statusMsg});
 }
 
-router.post('/login',  function(req, res, next) {
-    passport.authenticate('basic', function (err, account) {
-    req.logIn(account, function() {
-        res.status(err ? 500 : 200).send(err ? err : account);
+router.post('/login', function(req, res, next) {
+  passport.authenticate('basic', function(err, user, info) {
+    if (err) { return console.log('somethind done did went wroned'); }
+    if (!user) { return res.redirect('/login'); }
+    req.logIn(user, function(err) {
+      if (err) { return console.log('somethind done did went wroned'); }
+      console.log('logged in');
+      return res.status(200).json({something: 'this thing'});
     });
-})(req, res, next)
+  })(req, res, next);
 });
 
 

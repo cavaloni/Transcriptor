@@ -17,15 +17,30 @@ const app = express();
 
 const {PORT, DATABASE_URL} = require('./config');
 
+app.use(express.static('public'));
 
 app.use(cookieParser('S3CRE7'));
 app.use(bodyParser.json());
-app.use(session({ secret: 'keyboard cat', }));
+app.use(session( {
+  saveUninitialized: true, // saved new sessions
+  resave: false, // do not automatically write to the session store
+  secret: 'kitty cat',
+  cookie : { httpOnly: true, maxAge: 2419200000 } // configure when sessions expires
+}));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use('/users/', usersRouter);
-app.use('/transcriptions', transRouter);
-app.use(express.static('public', { redirect : false }));
+
+
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
 
 const basicStrategy = new BasicStrategy(function(username, password, callback) {
   let user;
@@ -49,18 +64,9 @@ const basicStrategy = new BasicStrategy(function(username, password, callback) {
     });
 });
 
+app.use('/users/', usersRouter);
 passport.use(basicStrategy);
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.findById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
+app.use('/transcriptions', transRouter);
 
 let server;
 

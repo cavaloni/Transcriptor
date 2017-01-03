@@ -71,7 +71,7 @@ function loginUser(username, password) {
             headers: {
                 'Authorization': 'Basic ' + btoa(username + ":" + password)
             },
-            "data": "{\"username\": \"Chad\",\n\t\"password\": \"Avalon\"\n}"
+            "data": `{\"username\": \"${username}\",\n\t\"password\": \"${password}\"\n}`
              })
         .done(function (msg) {
             renderDash();
@@ -116,8 +116,10 @@ function renderSignUpPage() {
 function getRecentTranscripts () {
     $.ajax({
         type: "GET",
-        processData: false,
         url: "http://localhost:8080/transcriptions",
+        xhrFields: {
+      withCredentials: true
+        }
     })
     .done(function (results) {
         renderRecent(results)
@@ -161,18 +163,29 @@ function handleNewUser() {
 
 
 function renderMyUploads() {
-    hideSearch();
-    $('.recent').empty();
-    let user = 'Jane Smith'
-    let userUploads = MOCK_DATA.map(function (data) {
-        if (user === data.uploadedBy) {
-            return `<p>${data.name}</p>`
-        }
-    });
+    user = state.loggedIn;
+    $.ajax({
+            type: "GET",
+            url: `http://localhost:8080/transcriptions/${user}`,
+            xhrFields: {
+                withCredentials: true
+            }
+        })
+        .done(function (results) {
+            hideSearch();
+            $('.recent').empty();
+            let userUploads = results.map(function (data) {
+                return `<p>${data.name}</p>`
+            });
+        });
     userUploads.forEach((data) => {
-        $('.recent').append(data);
-    });
+            $('.recent').append(data);
+        })
+        .fail(function (err) {
+            alert('cannot get results for user:' + err);
+        });
 }
+
 
 function renderHelpBox() {
     let helpBox = `<div class="help-box-wrapper">
@@ -196,11 +209,39 @@ function displaySearchPanel() {
     $('.recent').empty();
     $('.search-bar').removeClass('hidden');
     $('.js-first-search-button').click(function (e) {
+        let searchTerm = $('#searchterm').val();
+        console.log(searchTerm);
         e.preventDefault();
+        getSearchResults(searchTerm);
         displaySearchResults();
     })
 
 }
+
+function getSearchResults (searchTerm) {  
+    console.log(searchTerm);
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/transcriptions/search",
+        dataType: 'json',
+        data: `{"search": "${searchTerm}"}`,
+        xhrFields: {
+        withCredentials: true
+        },
+        "headers": {
+                "content-type": "application/json",
+                "cache-control": "no-cache",
+            },
+    })
+    .done(function (results) {
+        console.log(results);
+        renderRecent(results)
+    })
+    .fail(function (err) {  
+        alert('yo shit broke:' + err);
+    });
+}
+
 
 function displaySearchResults() {
     renderRecent();
@@ -209,13 +250,17 @@ function displaySearchResults() {
 function renderUploadBox() {
     let uploadBox = `<div class="upload-box-bg">
         <div class="upload-box">Upload Transcription
-        <form enctype="multipart/form-data" action="/upload/doc" method="post">
-        <input id="wordFile" type="file" />
+        <form enctype="multipart/form-data" action="/transcriptions/upload/${state.loggedIn}" method="post">
+        <input id="talkname" type="text" name="name">
+        <input id="date" type="text" name="date">
+        <input id="sessionnumber" type="text" name="sessionNumber">
+        <input id="wordFile" type="file" name="docUpload">
+        <input type="submit" value="Submit">
         </form>
         </div>
         </div>`
     $('body').append(uploadBox);
-    $('body').on('click', '.upload-box-bg', function () {
-        $('.upload-box-bg').remove();
-    });
+    // $('body').on('click', '.upload-box-bg', function () {
+    //     $('.upload-box-bg').remove();
+    // });
 }

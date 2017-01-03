@@ -17,13 +17,20 @@
     "express": "^4.14.0",
     "express-session": "^1.14.2",
     "mongoose": "^4.7.4",
+    "mongoose-text-search": "0.0.2",
+    "multer": "^1.2.1",
     "passport": "^0.3.2",
-    "passport-http": "^0.3.0"
+    "passport-http": "^0.3.0",
+    "textract": "^2.1.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-http": "^3.0.0",
     "faker": "^3.1.0",
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "superagent": "^3.3.1",
+    "supertest": "^2.0.1",
+    "supertest-as-promised": "^4.0.2",
+    "supertest-chai": "0.0.8"
   }
 }

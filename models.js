@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const textSearch = require('mongoose-text-search');
 
 const transcriptionSchema = mongoose.Schema ({ 
     name : {type: String, required: true},
@@ -6,7 +7,19 @@ const transcriptionSchema = mongoose.Schema ({
     date: {type: Date, required: true},
     dateUploaded: {type: Date, required: true},
     sessionNumber: {type: Number, required: true},
-    uploadedBy: {type: String, required: true}
+    uploadedBy: {type: String, required: true},
+    filepath: { 
+        path:{
+        type: String,
+        required: true,
+        trim: true
+        },
+        originalname: 
+        {
+        type: String,
+        required: true
+        }
+    }
 });
 
 transcriptionSchema.methods.apiRepr = function () {
@@ -21,7 +34,11 @@ transcriptionSchema.methods.apiRepr = function () {
     };
 }
 
-const Transcriptions = mongoose.model('Transcriptions', transcriptionSchema);
+transcriptionSchema.plugin(textSearch);
+
+transcriptionSchema.index({docText: 'text'});
+
+const Transcriptions = mongoose.model('transcriptions', transcriptionSchema);
 
 module.exports = {Transcriptions};
 

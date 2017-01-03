@@ -7,6 +7,10 @@ const faker = require('faker');
 const {Transcriptions} = require('../models');
 const {User} = require('../users/index.js');
 const bcrypt = require('bcryptjs');
+const expect = chai.expect;
+const tester = require("supertest-as-promised").agent;
+var superagent = require('superagent');
+var agent = superagent.agent();
 
 
 chai.use(chaiHttp);
@@ -27,6 +31,7 @@ function generateNumber () {
     return faker.random.number();
 }
 
+
 function seedUser() {
     console.log('seeding user data');
     const salt = bcrypt.genSaltSync();
@@ -34,8 +39,7 @@ function seedUser() {
     let user ={
             username: 'henry',
             password: hash
-        }; 
-    console.log(user);       
+        };      
     return User.create(user);
 }
 
@@ -46,7 +50,11 @@ function generateTranscriptionData () {
         date: generateDate(),
         dateUploaded: generateDate(),
         sessionNumber: generateNumber(),
-        uploadedBy: generateName()
+        uploadedBy: generateName(),
+        filepath: {
+            path: generateName(),
+            originalname: generateName()
+        }
 }
 }
 
@@ -73,6 +81,8 @@ function tearDownDB() {
 
 describe('Transcriptor API resource', function () {
 
+let cookie;
+
     before(function () {
         return runServer();
     });
@@ -80,10 +90,12 @@ describe('Transcriptor API resource', function () {
     beforeEach(function () {
         return seedTransData();
     });
+    
 
     beforeEach(function () {
         return seedUser();
     })
+
 
     after(function () {
         return closeServer();
@@ -93,58 +105,130 @@ describe('Transcriptor API resource', function () {
         return tearDownDB();
     });
 
-    describe('Transcription API resource', function () {
-        it('should return status 200 on start', function () {
-            return chai.request(app)                
-                .get('/transcriptions')
-                .auth('henry', 'johnson123')
-                .send({
-                    username: 'henry',
-                    password: 'johnson123'    
-                })
-                .then(function (res) {
-                    res.should.have.status(200);
-                });
+    beforeEach(function() {
+      return tester(app)
+        .post('/users/login')
+        .send({
+          username: 'henry',
+          password: 'johnson123'
+        })
+        .auth('henry', 'johnson123')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .then(function(res) {
+          cookie = res.headers['set-cookie'];
         });
     });
+    
+    // describe('New user', function () {  
+    //     it('should register a new user', function () {  
+    //         return tester(app)
+    //             .post('/users')
+    //             .send({
+    //                 username: 'george',
+    //                 password: 'mainstay'
+    //             })
+    //             .then(function (res) {  
+    //                 res.should.have.status(201)
+    //                 res.should.be.json;
+    //             });
+    //     });
+    // })
+
+    // describe('User login endpoint', function () {  
+    //     it('should log a user in', function () {  
+    //         return tester(app)
+    //             .post('/users/login')
+    //             .send({
+    //                 username: 'henry',
+    //                 password: 'johnson123'
+    //             })
+    //             .auth('henry', 'johnson123')
+    //             .then(function (res) {                   
+    //                 res.should.have.status(200);
+    //             });
+    //     });
+    // });
+
 
     describe('GET Resource', function () {
-        it('should return all transcriptions in databse on GET', function () {
-            return chai.request(app)
-                .get('/transcriptions')
-                .auth('henry', 'johnson123')
-                .then(function (res) {
-                    res.should.have.status(200);
-                    res.should.be.json;
-                    res.body.transcriptions.should.have.lenght.of.at.least(1);
-                    return Transcriptions.count();
-                })
-                .then(count => {
-                    res.body.transcriptions.should.have.length.of(count);
-    
-                })
-                .catch(err => console.error(err));
-        });
+    // it('should return all transcriptions in databse on GET', function () {
+    //      return tester(app) //First log user in
+    //         .post('/users/login')
+    //         .auth('henry', 'johnson123')
+    //         .send({
+    //                 username: 'henry',
+    //                 password: 'johnson123'
+    //             })
+    //         .then(function (res) {
+    //             cookie = res.headers['set-cookie'];
+    //             console.log('this worked before-----------------');
+    //             res.should.have.status(200);
+    //             expect(res).to.have.cookie('connect.sid');
+    //         });
+            
+    // });
 
+    it('should get ', function () {  
+        return tester(app)
+                    .get('/transcriptions')
+                    .set('cookie', cookie)
+                    .then(function (res) {
+                        console.log('this worked-**********----------------');
+                        res.should.have.status(200);
+                        res.should.be.json;
+                        res.body.transcriptions.should.have.lenght.of.at.least(1);
+                        return Transcriptions.count();
+                    })
+                    .then(count => {
+                        res.body.transcriptions.should.have.length.of(count);
+
+                    })
+                    .catch(err => console.error(err));  
+    })
+
+   
         it('should return transcriptions with the right fields', function () {
-            return chai.request(app)
+            let resTranscription;
+            return tester(app)
                 .get('/transcriptions')
-                .auth('henry', 'johnson123')
+                .set('cookie', cookie)
                 .then(function (res) {
                     res.should.have.status(200);
                     res.should.be.json;
                     res.body.should.be.a('array');
                     res.body.should.have.length.of.at.least(1);
-
                     res.body.forEach(function (transcription) {
                         transcription.should.be.a('object');
                         transcription.should.include.keys('id', 'name', 'docText', 'date', 'dateUploaded', 'sessionNumber');
                     });
                     resTranscription = res.body[0];
-                    return Transcriptions.findById
-                })
+                    return Transcriptions.findById(resTranscription)
+                    .then(function (transcription) {  
+                        transcription.forEach((item) => {
+                            item.id.should.equal(resTranscription.id);
+                            item.name.should.equal(resTranscription.name);
+                            item.sessionNumber.should.equal(resTranscription.sessionNumber);
+                        });
+                    });
+                });
         });
     });
+
+    describe('GET resource for searching', function () {  
+        it('should return a search query', function () {  
+            const query = 'people talk'
+            return tester(app)
+                .get('/transcriptions/search')
+                .send({searchTerm: query})
+                .then(function (res) {  
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.should.be.a('object');
+                    res.body.should.include.keys('name', 'uploadedBy', 'docText', 'date', 'dateUploaded', 'sessionNumber');
+                })
+            })
+    })
 
     describe('POST resource for transcriptions', function () {
         it('Should insert a transciption in the databse on POST', function () {
@@ -156,7 +240,7 @@ describe('Transcriptor API resource', function () {
                 dateUploaded: generateDate(),
                 sessionNumber: generateNumber()
             };
-            return chai.request(app)
+            return tester(app)
                 .post('/transcriptions')
                 .send(newTranscription)
                 .then(function (res) {
@@ -192,7 +276,7 @@ describe('Transcriptor API resource', function () {
                 .then(function (trans) {
                     update = trans.id
 
-                    return chai.request(app)
+                    return tester(app)
                         .put(`/transcriptions/${trans.id}`)
                         .send(update)
                 })
@@ -217,7 +301,7 @@ describe('Transcriptor API resource', function () {
                 .findOne()
                 .then(function (transcription)  {
                     transcriptionTD = transcription;
-                    return chai.request(app).delete(`/transcriptions/${transcriptionTD.id}`);
+                    return tester(app).delete(`/transcriptions/${transcriptionTD.id}`);
                 })
                 .then(function(res) {
                     res.should.have.status(204);
@@ -225,33 +309,6 @@ describe('Transcriptor API resource', function () {
                 })
                 .then(function (transciption) {
                     should.not.exist(transciption)
-                });
-        });
-    });
-
-    describe('POST endpoint to store new userrs at /users', () => {
-        it('should register a new user', function() {
-            return chai.request(app)
-                .post('/users')
-                .send({
-                    username: 'buttface',
-                    password: 'mcgee'
-                })
-                .then((res) => {                    
-                    res.status.should.eql(201);
-                });
-        });
-    });
-
-    describe('POST endpoint to log users in at /users/login', () => {
-        it('should login a user', function () {
-            return chai.request(app)
-                .post('/users/login')
-                .auth('henry', 'johnson123')
-                .then((res) => {
-                    console.log(res.body);
-                    res.should.be.json;
-
                 });
         });
     });
