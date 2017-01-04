@@ -2,22 +2,45 @@
     margin: 0;
     width: 100%;
     height: 65px;
-    background-color: #3c84d5; 
     padding-top: 20px;
     padding-left: 20px;
-    font-family: 'Poiret One', cursive;
+    font-size: 20px;
+    font-family: 'Julius Sans One', sans-serif;
+    background: url("../img/Untitled-1.gif") 150px top,
+    linear-gradient(to left, #76b852, #8DC26F);
+    background-size: 90%, cover;
+    background-repeat: no-repeat;
+    font-weight: bold;
+}
+
+.welcome-bar {
+    width: 100%;
+    height: 75%;
+    font-family: 'Julius Sans One', sans-serif;
+    color:#53594a;
     font-size: 40px;
+    background: url("../img/Untitled-1.gif") 150px top,
+    linear-gradient(to left, #76b852, #8DC26F);
+    background-size: 90%, cover;
+    background-repeat: no-repeat;
+    font-weight: bold;
 }
 
 .nav-bar {
-    margin-top: 200px;
-    list-style: none;
+    margin-top: 0;
+    padding-top: 20px;  
     float: left;
     text-align: left;
     clear: both;
+    border: 1px;
 }
 
-.nav-bar > li {
+.nav-bar ul {
+    list-style: none;
+    padding-left: 0px;
+}
+
+.nav-bar > ul > li {
     margin-bottom: 20px;
     border: 1px solid black;
 
@@ -74,7 +97,67 @@
 form {
     position: relative;
     top: 20px;
+    font-family: "Roboto", sans-serif;
 }
+
+.signup-box input {
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.new-signup-box input {
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+.signup-box button {
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  outline: 0;
+  background: #4CAF50;
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+}
+
+.new-signup-box button {
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  outline: 0;
+  background: #4CAF50;
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+}
+
+.signup-box button:hover,.form button:active,.form button:focus {
+  background: #43A047;
+}
+
 
 .sign-up-page {
     position: fixed;
@@ -85,7 +168,7 @@ form {
     text-align: center;
 }
 
-.signup-box, .new-signup-box {
+.new-signup-box {
     position: absolute;
     top: 200px;
     left: calc(50% - 100px);
@@ -94,13 +177,25 @@ form {
     width: 200px;
 }
 
+.signup-box, .new-signup-box {
+    background: #FFFFFF;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+    position: absolute;
+    top: 40%;
+    left: calc(50% - 150px);
+    height: 230px;
+    width: 300px;
+    padding:20px;
+    border-radius: 1px;
+}
+
 .sign-in-button, .new-sign-in-button {
     margin-top: 30px;
 }
 
 .sign-up {
     position: relative;
-    top: 40px;
+    top: 30px;
     text-align: center;
 }
 

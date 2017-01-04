@@ -29,8 +29,6 @@ const upload = multer({
 
 //middleware to protect endpoints using passport
 var isAuthenticated = function (req, res, next) {
-  console.log(req.isAuthenticated());
- 
   if (req.isAuthenticated()) {
     console.log('***********AUTHORIZED');
     return next();
@@ -49,7 +47,6 @@ router.get('/', isAuthenticated,
                     .then(transcriptions => {
                         let foo = transcriptions.map(
                             (transcription) => transcription.apiRepr());
-                        console.log(foo);
                         res.json(foo);
                     })
                     .catch(
@@ -64,7 +61,6 @@ router.get('/', isAuthenticated,
 
 router.post('/search', isAuthenticated,
     (req, res) => {
-       console.log(req.body);
        Transcriptions
             .find({ $text : { $search : req.body.search }},function(err,results){
             if (err) {console.log(err);}
@@ -92,7 +88,6 @@ router.get('/:userid', isAuthenticated,
     })
 
 router.post('/upload/:id', isAuthenticated, upload.any(), (req, res) => {
-    console.log(req.body);
     const requiredFields = ['name', 'date', 'sessionNumber'];
     requiredFields.forEach(field => {
         if (!(field in req.body) || !(req.files)) {

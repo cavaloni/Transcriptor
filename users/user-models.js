@@ -12,6 +12,10 @@ const  UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    project: {
+        type: String,
+        required: true
     }
 });
 
@@ -26,6 +30,8 @@ UserSchema.statics.hashPassword = function(password) {
     .hash(password, 10)
     .then(hash => hash);
 }
+
+
 
 const User = mongoose.model('User', UserSchema);
 

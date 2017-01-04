@@ -15,6 +15,8 @@ var agent = superagent.agent();
 
 chai.use(chaiHttp);
 
+mongoose.set('debug', true);
+
 function generateName () {
     return faker.name.firstName();
 }
@@ -38,7 +40,8 @@ function seedUser() {
     const hash = bcrypt.hashSync('johnson123', salt);
     let user ={
             username: 'henry',
-            password: hash
+            password: hash,
+            project: "wierd"
         };      
     return User.create(user);
 }
@@ -110,13 +113,13 @@ let cookie;
         .post('/users/login')
         .send({
           username: 'henry',
-          password: 'johnson123'
+          password: 'johnson123',
         })
         .auth('henry', 'johnson123')
         .expect(200)
         .expect('Content-Type', /json/)
         .then(function(res) {
-          cookie = res.headers['set-cookie'];
+        cookie = res.headers['set-cookie'];
         });
     });
     
@@ -169,20 +172,21 @@ let cookie;
             
     // });
 
-    it('should get ', function () {  
+    it('should get all transcriptions', function () {  
+        let response;
         return tester(app)
                     .get('/transcriptions')
                     .set('cookie', cookie)
                     .then(function (res) {
-                        console.log('this worked-**********----------------');
+                        console.log(res.body);
                         res.should.have.status(200);
                         res.should.be.json;
-                        res.body.transcriptions.should.have.lenght.of.at.least(1);
+                        res.body.should.have.length.of.at.least(1);
+                        response = res;
                         return Transcriptions.count();
                     })
                     .then(count => {
-                        res.body.transcriptions.should.have.length.of(count);
-
+                        response.body.should.have.length.of(count - 1); 
                     })
                     .catch(err => console.error(err));  
     })
@@ -202,26 +206,34 @@ let cookie;
                         transcription.should.be.a('object');
                         transcription.should.include.keys('id', 'name', 'docText', 'date', 'dateUploaded', 'sessionNumber');
                     });
-                    resTranscription = res.body[0];
+                    resTranscription = res.body[0].id;
+                    trans = res.body[0];
                     return Transcriptions.findById(resTranscription)
-                    .then(function (transcription) {  
-                        transcription.forEach((item) => {
-                            item.id.should.equal(resTranscription.id);
-                            item.name.should.equal(resTranscription.name);
-                            item.sessionNumber.should.equal(resTranscription.sessionNumber);
+                    .then(function (item) {
+                            item.id.should.equal(trans.id);
+                            item.name.should.equal(trans.name);
+                            item.sessionNumber.should.equal(trans.sessionNumber);
                         });
                     });
                 });
         });
-    });
 
     describe('GET resource for searching', function () {  
         it('should return a search query', function () {  
-            const query = 'people talk'
+             Transcriptions.on('index', function (err) {
+            if (err) {
+                console.error('User index error: %s', err);
+            } else {
+                console.info('User indexing complete');
+            }
+        });
+            const query = 'ipsum'
             return tester(app)
-                .get('/transcriptions/search')
-                .send({searchTerm: query})
+                .post('/transcriptions/search')
+                .set('cookie', cookie)
+                .send({search: query})
                 .then(function (res) {  
+                    console.log(res.body.transcriptions) + 'this one';
                     res.should.have.status(200);
                     res.should.be.json;
                     res.body.should.be.a('object');
@@ -232,34 +244,34 @@ let cookie;
 
     describe('POST resource for transcriptions', function () {
         it('Should insert a transciption in the databse on POST', function () {
-            const newTranscription = {
-                uploadedBy: generateName(),
-                name: generateName(),
-                docText: generateText(),
-                date: generateDate(),
-                dateUploaded: generateDate(),
-                sessionNumber: generateNumber()
-            };
+            newTranscription = {
+                name: 'John Doe',
+                date: '12/12/12',
+                sessionNumber: '2',
+                uploadedBy: 'henry'
+            }
             return tester(app)
-                .post('/transcriptions')
-                .send(newTranscription)
+                .post('/transcriptions/upload/henry')
+                .set('cookie', cookie)
+                .field('name', 'John Doe')
+                .field('date', '12/12/12')
+                .field('sessionNumber', 2)
+                .attach('file', './uploads/8859-1.txt')
                 .then(function (res) {
                     res.should.have.status(201);
                     res.should.be.json;
                     res.body.should.be.a('object');
                     res.body.should.include.keys('name', 'uploadedBy', 'docText', 'date', 'dateUploaded', 'sessionNumber');
                     res.body.name.should.equal(newTranscription.name);
-                    res.body.uploadedBy.should.equal(newTranscription.uploadedBy)
-                    res.body.docText.should.equal(newTranscription.docText);
-                    res.body.sessionNumber.should.equal(newTranscription.sessionNumber);
+                    res.body.uploadedBy.should.equal(newTranscription.uploadedBy);
+                    res.body.sessionNumber.toString().should.equal(newTranscription.sessionNumber);
                     return Transcriptions.findById(res.body.id)
                     .exec();
                 })
                 .then(function (transcription) {
                     transcription.name.should.equal(newTranscription.name);
-                    transcription.uploadedBy.should.equal(newTranscription.uploadedBy)
-                    transcription.docText.should.equal(newTranscription.docText);
-                    transcription.sessionNumber.should.equal(newTranscription.sessionNumber);
+                    transcription.uploadedBy.should.equal(newTranscription.uploadedBy);
+                    transcription.sessionNumber.toString().should.equal(newTranscription.sessionNumber);
                 });
         });
     });

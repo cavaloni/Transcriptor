@@ -75,6 +75,28 @@ router.post('/', function (req, res) {
         });
     }
 
+    var project = req.body.project;
+
+    if (!(project) in req.body) {
+        return res.status(422).json({
+            message: 'Missing field: project'
+        });
+    }
+
+    if (typeof project !== 'string') {
+        return res.status(422).json({
+            message: 'Incorrect field type: project'
+        });
+    }
+
+    project = project.trim();
+
+    if (project === '') {
+        return res.status(422).json({
+            message: 'Incorrect field length: username'
+        });
+    }
+
     return User
         .find({
             username
@@ -95,6 +117,7 @@ router.post('/', function (req, res) {
                 .create({
                     username: username,
                     password: hash,
+                    project: project
                 })
         })
         .then(user => {
@@ -106,10 +129,6 @@ router.post('/', function (req, res) {
             })
         });
 });
-
-function handleResponse(res, code, statusMsg) {
-  res.status(code).json({status: statusMsg});
-}
 
 router.post('/login', function(req, res, next) {
   passport.authenticate('basic', function(err, user, info) {
