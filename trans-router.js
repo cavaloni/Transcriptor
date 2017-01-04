@@ -27,6 +27,27 @@ const upload = multer({
  storage: storage
 });
 
+
+//Project Handling
+function getProjectName(user) {  
+     console.log('prooooooooooooop-----------------------------------------------------------------------');
+     console.log(user);
+     let project;
+     User.findOne({
+         username: user
+    })
+    .exec()
+    .then(_user => {  
+        console.log(_user);
+        project = _user.project
+    }).catch(function (err) {  
+        console.log(err);
+    });
+    console.log(project);
+    return project
+}
+
+
 //middleware to protect endpoints using passport
 var isAuthenticated = function (req, res, next) {
   if (req.isAuthenticated()) {
@@ -72,22 +93,26 @@ router.post('/search', isAuthenticated,
     
 
 router.get('/:userid', isAuthenticated, 
-    (req, res) => {
+    (req, res) => {    
+        console.log('========================================================');
         Transcriptions
             .find({
+                projectName: req.user.project,
                 uploadedBy: req.params.userid
             })
             .limit(10)
             .exec()
             .then(transcriptions => {
-                res.json({
-                    transcriptions: transcriptions.map((transcriptions =>
+                res.json({transcriptions: 
+                    transcriptions.map((transcription =>
                         transcription.apiRepr()))
                 });
-            });
-    })
+            })
+            .catch(err => {console.log(err);})    
+    });
 
 router.post('/upload/:id', isAuthenticated, upload.any(), (req, res) => {
+    console.log('got to heeeeeeeeeeeeeeeeerrrrrrrrrrrrrrrrrreeeeeeeeeeeeee');
     const requiredFields = ['name', 'date', 'sessionNumber'];
     requiredFields.forEach(field => {
         if (!(field in req.body) || !(req.files)) {
@@ -115,6 +140,7 @@ router.post('/upload/:id', isAuthenticated, upload.any(), (req, res) => {
     }).then(() => {
         Transcriptions
             .create({
+                projectName: req.user.project,
                 name: req.body.name,
                 uploadedBy: req.params.id,
                 docText: docText,

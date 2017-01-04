@@ -25,6 +25,7 @@ UserSchema.methods.validatePassword = function(password) {
     .then(isValid => isValid);
 }
 
+
 UserSchema.statics.hashPassword = function(password) {
   return bcrypt
     .hash(password, 10)

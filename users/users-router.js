@@ -137,7 +137,7 @@ router.post('/login', function(req, res, next) {
     req.logIn(user, function(err) {
       if (err) { return console.log('somethind done did went wroned'); }
       console.log('logged in');
-      return res.status(200).json({something: 'this thing'});
+      return res.status(200).json({project: user.project});
     });
   })(req, res, next);
 });

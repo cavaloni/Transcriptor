@@ -27,12 +27,40 @@
 }
 
 .nav-bar {
-    margin-top: 0;
-    padding-top: 20px;  
+    margin-top: 40px;
     float: left;
     text-align: left;
     clear: both;
-    border: 1px;
+    
+}
+
+.search-icon, .upload-icon, .myuploads-icon, .recentuploads-icon, .help-icon {
+    height: 50px;
+    width: 50px;
+    background-size: cover;
+    background-position: center;
+    margin: auto;
+
+}
+
+.search-icon {
+    background-image: url("../img/search.png");
+}
+
+.upload-icon {
+    background-image: url("../img/add-3.png");
+}
+
+.myuploads-icon {
+    background-image: url("../img/folder-14.png");
+}
+
+.recentuploads-icon {
+    background-image: url("../img/clock.png");
+}
+
+.help-icon {
+    background-image: url("../img/info.png");
 }
 
 .nav-bar ul {
@@ -41,12 +69,32 @@
 }
 
 .nav-bar > ul > li {
-    margin-bottom: 20px;
-    border: 1px solid black;
-
+    font-family: 'Comfortaa', cursive;
+    height: 75px;
+    text-align: center;
 }
 
-.nav-bar > li:hover {
+#search {
+    background-color: #BBDEC6;
+}
+
+#upload {
+    background-color: #859E8D;
+}
+
+#my-uploads {
+    background-color: #455249;
+}
+
+#recent-uploads {
+    background-color: #505F54;
+}
+
+#help {
+    background-color: #303832;
+}
+
+.nav-bar > ul > li:hover {
     cursor: pointer;
 }
 
@@ -158,6 +206,10 @@ form {
   background: #43A047;
 }
 
+.nav-bar > ul {
+    margin: 0;
+    padding: 0;
+}
 
 .sign-up-page {
     position: fixed;
@@ -173,7 +225,7 @@ form {
     top: 200px;
     left: calc(50% - 100px);
     border: 2px solid black;
-    height: 160px;
+    height: 240px;
     width: 200px;
 }
 

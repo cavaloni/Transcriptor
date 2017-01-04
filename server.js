@@ -42,6 +42,7 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
+
 const basicStrategy = new BasicStrategy(function(username, password, callback) {
   let user;
   User
@@ -49,6 +50,7 @@ const basicStrategy = new BasicStrategy(function(username, password, callback) {
     .exec()
     .then(_user => {
       user = _user;
+      console.log(user + '11111111111111111111111111111111111111');
       if (!user) {
         return callback(null, false, {message: 'Incorrect username'});
       }

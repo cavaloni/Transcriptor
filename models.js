@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const textSearch = require('mongoose-text-search');
 
 const transcriptionSchema = mongoose.Schema ({ 
+    projectName: {type: String, required: true},
     name : {type: String, required: true},
     docText: {type: String, required: true},
     date: {type: Date, required: true},
@@ -24,6 +25,7 @@ const transcriptionSchema = mongoose.Schema ({
 
 transcriptionSchema.methods.apiRepr = function () {
     return {
+        project: this.projectName,
         id: this._id,
         name: this.name,
         docText: this.docText,

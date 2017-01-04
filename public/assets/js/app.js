@@ -25,7 +25,8 @@ const MOCK_DATA = [{
 }];
 
 const state = {
-    loggedIn: ''
+    loggedIn: '',
+    project: ''
 };
 
 //Event Listeners
@@ -74,6 +75,7 @@ function loginUser(username, password) {
             "data": `{\"username\": \"${username}\",\n\t\"password\": \"${password}\"\n}`
              })
         .done(function (msg) {
+            console.log(msg);
             renderDash();
         })
         .fail(function (err) {
@@ -104,6 +106,8 @@ function renderSignUpPage() {
                 <label for="username">Username</label>
                 <input type="text" id="new-password">
                 <label for="password">Password</label>
+                <input type="text" id="project">
+                <label for="project">Project</label>
                 </form>
                 <button type="submit" class="new-sign-in-button">Sign Up</button>
         </div>`
@@ -143,10 +147,11 @@ function renderRecent(results) {
 function handleNewUser() {
     let pWord = $('#new-password').val();
     let uName = $('#new-username').val();
+    let pName = $('#project').val();
     $.ajax({
             type: "POST",
             "processData": false,
-            "data": `{\"username\": \"${uName}\",\n\t\"password\": \"${pWord}\"\n}`,
+            "data": `{\"username\": \"${uName}\",\n\t\"password\": \"${pWord}\",\n\t\"project\": \"${pName}\"\n}`,
             url: 'http://localhost:8080/users',
             "headers": {
                 "content-type": "application/json",
@@ -154,7 +159,8 @@ function handleNewUser() {
             },
         })
         .done(function (msg) {
-            loginUser(uName, pWord)
+            state.project = msg.project;
+            loginUser(uName, pWord);
         })
         .fail(function (err) {
             alert(`error ${err}`)

@@ -15,7 +15,7 @@ var agent = superagent.agent();
 
 chai.use(chaiHttp);
 
-mongoose.set('debug', true);
+// mongoose.set('debug', true);
 
 function generateName () {
     return faker.name.firstName();
@@ -48,6 +48,7 @@ function seedUser() {
 
 function generateTranscriptionData () {
     return {
+        projectName: generateName(),
         name: generateName(),
         docText: generateText(),
         date: generateDate(),
@@ -61,13 +62,32 @@ function generateTranscriptionData () {
 }
 }
 
+function generateControlTranscriptionData() {  
+       return {
+        projectName: 'wierd',
+        name: 'bear',
+        docText: 'some great text that contains normal words that can be searched',
+        date: generateDate(),
+        sessionNumber: generateNumber(),
+        dateUploaded: generateDate(),
+        filepath: {
+            path: '/bung',
+            originalname: 'hole'
+        },
+        uploadedBy: 'henry'
+    }
+}
+
 function seedTransData() {
     console.log('seeding transcription data');
     const seedData = [];
+    //ned a predictable piece of data for certain search tests
+    let controlData = generateControlTranscriptionData();
 
     for (let i = 0; i <= 10; i++) {
         seedData[i] = generateTranscriptionData();
     }
+    seedData.push(controlData);
     return Transcriptions.insertMany(seedData);
     
 };
@@ -91,14 +111,12 @@ let cookie;
     });
 
     beforeEach(function () {
-        return seedTransData();
-    });
-    
-
-    beforeEach(function () {
         return seedUser();
     })
 
+    beforeEach(function () {
+        return seedTransData();
+    });
 
     after(function () {
         return closeServer();
@@ -218,6 +236,36 @@ let cookie;
                 });
         });
 
+    describe('GET resource for individual user', function () {  
+        it('should get transcriptions that the user uploaded', function () {  
+            let resTranscription;
+            return tester(app)
+                .get('/transcriptions/henry')
+                .set('cookie', cookie)
+                .then(function (res) {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.transcriptions.should.be.a('array');
+                    res.body.transcriptions.should.have.length.of.at.least(1);
+                    console.log('**************made it here');
+                    res.body.transcriptions.forEach(function (transcription) {
+                        transcription.should.be.a('object');
+                        transcription.should.include.keys('id', 'name', 'docText', 'date', 'dateUploaded', 'sessionNumber');
+                    });
+                    console.log(res.body);
+                    resTranscription = res.body.transcriptions[0].id;
+                    trans = res.body.transcriptions[0];
+                    return Transcriptions.findById(resTranscription)
+                    .then(function (item) {
+                            console.log('**************and here');
+                            item.id.should.equal(trans.id);
+                            item.name.should.equal(trans.name);
+                            item.sessionNumber.should.equal(trans.sessionNumber);
+                        });
+                    });
+        })
+    })
+
     describe('GET resource for searching', function () {  
         it('should return a search query', function () {  
              Transcriptions.on('index', function (err) {
@@ -227,7 +275,7 @@ let cookie;
                 console.info('User indexing complete');
             }
         });
-            const query = 'ipsum'
+            const query = 'great'
             return tester(app)
                 .post('/transcriptions/search')
                 .set('cookie', cookie)
@@ -245,6 +293,7 @@ let cookie;
     describe('POST resource for transcriptions', function () {
         it('Should insert a transciption in the databse on POST', function () {
             newTranscription = {
+                projectName: "wierd",
                 name: 'John Doe',
                 date: '12/12/12',
                 sessionNumber: '2',
@@ -253,15 +302,17 @@ let cookie;
             return tester(app)
                 .post('/transcriptions/upload/henry')
                 .set('cookie', cookie)
+                .field('projectName', 'wierd')
                 .field('name', 'John Doe')
                 .field('date', '12/12/12')
                 .field('sessionNumber', 2)
+
                 .attach('file', './uploads/8859-1.txt')
                 .then(function (res) {
                     res.should.have.status(201);
                     res.should.be.json;
                     res.body.should.be.a('object');
-                    res.body.should.include.keys('name', 'uploadedBy', 'docText', 'date', 'dateUploaded', 'sessionNumber');
+                    res.body.should.include.keys('name', 'uploadedBy', 'docText', 'date', 'dateUploaded', 'sessionNumber', 'project', 'id');
                     res.body.name.should.equal(newTranscription.name);
                     res.body.uploadedBy.should.equal(newTranscription.uploadedBy);
                     res.body.sessionNumber.toString().should.equal(newTranscription.sessionNumber);
