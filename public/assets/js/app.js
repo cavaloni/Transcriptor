@@ -256,17 +256,25 @@ function displaySearchResults() {
 function renderUploadBox() {
     let uploadBox = `<div class="upload-box-bg">
         <div class="upload-box">Upload Transcription
-        <form enctype="multipart/form-data" action="/transcriptions/upload/${state.loggedIn}" method="post">
-        <input id="talkname" type="text" name="name">
-        <input id="date" type="text" name="date">
-        <input id="sessionnumber" type="text" name="sessionNumber">
+        <form enctype="multipart/form-data" action="/transcriptions/upload/${state.loggedIn}" method="post" id="upload-box-form">
+        <input id="talkname" type="text" name="name" placeholder="Name of Session">
+        <br>
+        <input id="date" type="text" name="date" placeholder="Date of Recording">
+        <br>
+        <input id="sessionnumber" type="text" name="sessionNumber" placeholder="Session Number">
+        <br>
         <input id="wordFile" type="file" name="docUpload">
-        <input type="submit" value="Submit">
+        <br>
+        <input type="submit" value="Submit" id="submit-upload">
         </form>
+        <div id="cancel-upload">Cancel</div>
         </div>
         </div>`
     $('body').append(uploadBox);
-    // $('body').on('click', '.upload-box-bg', function () {
-    //     $('.upload-box-bg').remove();
-    // });
+    $('.upload-box-bg').animate({
+        opacity: 1
+    }, 300);
+    $('body').on('click', '#cancel-upload', function () {
+        $('.upload-box-bg').remove();
+    });
 }

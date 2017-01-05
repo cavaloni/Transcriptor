@@ -6,9 +6,9 @@
     padding-left: 20px;
     font-size: 20px;
     font-family: 'Julius Sans One', sans-serif;
-    background: url("../img/Untitled-1.gif") 150px top,
+    background: url("../img/Untitled-1.gif") right 40px top -40px,
     linear-gradient(to left, #76b852, #8DC26F);
-    background-size: 90%, cover;
+    background-size: 50%, cover;
     background-repeat: no-repeat;
     font-weight: bold;
 }
@@ -43,7 +43,7 @@
 
 }
 
-.search-icon {
+/*.search-icon {
     background-image: url("../img/search.png");
 }
 
@@ -61,7 +61,7 @@
 
 .help-icon {
     background-image: url("../img/info.png");
-}
+}*/
 
 .nav-bar ul {
     list-style: none;
@@ -70,8 +70,14 @@
 
 .nav-bar > ul > li {
     font-family: 'Comfortaa', cursive;
-    height: 75px;
+    height: 50px;
     text-align: center;
+    line-height: 50px;
+    border-radius: 4px;
+    margin-top: 10px;
+    margin-left: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 #search {
@@ -99,38 +105,132 @@
 }
 
 .recent {
+    font-family: 'News Cycle', sans-serif;
     display: inline-block;
     width: 60%;
-    margin-top: 100px;
-    margin-left: 10px;
-    background-color: gray;
+    margin-top: 20px;
+    margin-left: 20px;
+    border-bottom: 3px solid gray;
+    font-size: 28px;
+    text-indent: 20px;
 }
+
+
 
 .hidden {
     display: none;
 }
 
 .search-bar {
-    margin-top: 50px;
+    margin: 50px 50px 0 0;
+}
+
+.search-form {
+    margin-top: 100px;
+}
+
+.trans-search {
+    text-align: center;
+    font-family: 'Julius Sans One', sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.js-first-search-button {
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    background-color: #FF6766;
+}
+
+.js-first-search-button:hover {
+    cursor: pointer;
+    background-color: #DF6766;
+    
+}
+
+#searchterm {
+    font-family: 'News Cycle', sans-serif;
+    border: 2px solid lightgray;
+    border-radius: 20px;
+	font-size: 18px;
+    margin-left: 5%;
+    margin-bottom: 10px;
 }
 
 .upload-box-bg, .help-box-wrapper{
+    opacity: 0;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(76, 76, 77, 0.57);
-    text-align: center;
+    /*! text-align: center; */
 }
 
 .upload-box {
+    font-weight: bolder;
+    font-family: 'Julius Sans One', sans-serif;
+    font-size: 20px;
+    border-radius: 5px;
+    padding: 10px;
     position: relative;
-    top: calc(50% - 100px);
-    left: calc(50% - 110px);
-    height: 400px;
-    width: 220px;
-    background-color: white;
+    top: calc(50% - 170px);
+    left: calc(50% - 150px);
+    height: 380px;
+    width: 300px;
+    box-shadow: 5px 5px 30px 2px;
+    background-color: rgb(240, 240, 240);
+}
+
+#wordFile {
+    margin-top: 30px;
+    width: 100%;
+}
+
+#upload-box-form > label {
+    font-size: 17px;
+    font-weight: initial;
+}
+
+#upload-box-form > input {
+    border-radius: 4px;
+    border: none;
+    background-color: darkgray;
+    box-shadow: 1px 1px 3px inset;
+    margin-top: 20px;
+    font-size: 18px;
+    width: 100%;
+}
+
+#upload-box-form {
+    font-family: 'News Cycle', sans-serif;
+}
+
+#upload-box-form > #submit-upload {
+    border-radius: 10px;
+    font-size: 18px;
+    background-color: #FF6766;
+    box-shadow: none;
+    text-align: center;
+    margin-top: 60px;
+}
+
+#upload-box-form > #submit-upload:hover {
+    cursor: pointer;
+    background-color: #BF6766;
+}
+
+#cancel-upload {
+    margin-top: 40px;
+    font-size: 13px;
+}
+
+#cancel-upload:hover {
+    color: blue;
+   font-style: italic;
+   cursor: pointer;
 }
 
 .help-box {
@@ -235,7 +335,7 @@ form {
     position: absolute;
     top: 40%;
     left: calc(50% - 150px);
-    height: 230px;
+    height: 240px;
     width: 300px;
     padding:20px;
     border-radius: 1px;
@@ -262,4 +362,8 @@ form {
     bottom: 21px;
     right: 50px;
     position: relative;
+}
+
+body {
+    background:linear-gradient(to right, #F6F7F2, #E0E4CC);
 }

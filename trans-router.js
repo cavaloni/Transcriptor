@@ -83,12 +83,11 @@ router.get('/', isAuthenticated,
 router.post('/search', isAuthenticated,
     (req, res) => {
        Transcriptions
-            .find({ $text : { $search : req.body.search }},function(err,results){
-            if (err) {console.log(err);}
-            console.log(results + '/////////////');
-            res.send(results);
-
-        })
+            .find({ $text : { $search : req.body.search }}, function(err,results){
+                if (err) {console.log(err);}
+                console.log(results + '/////////////');
+                res.send(results);
+            })
             })
     
 

@@ -171,6 +171,34 @@ let cookie;
     //     });
     // });
 
+ describe('GET resource for searching', function () {  
+        it('should return a search query', function () {  
+             Transcriptions.on('index', function (err) {
+            if (err) {
+                console.error('User index error: %s', err);
+            } else {
+                console.info('User indexing complete');
+            }
+        });
+            const query = 'great';
+            return tester(app)
+                .post('/transcriptions/search')
+                .set('cookie', cookie)
+                .send({search: query})
+                .then(function (res) {  
+                    console.log('------------------123456780--------------------------');
+                    console.log(res);
+                    console.log(res.body);
+                    console.log(res.body[0] + 'this one');
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.should.be.a('array');
+                    res.body.forEach((searchResult) => {
+                        searchResult.should.include.keys('name', 'uploadedBy', 'docText', 'date', 'dateUploaded', 'sessionNumber');
+                    });
+                })
+            })
+    })
 
     describe('GET Resource', function () {
     // it('should return all transcriptions in databse on GET', function () {
@@ -204,7 +232,7 @@ let cookie;
                         return Transcriptions.count();
                     })
                     .then(count => {
-                        response.body.should.have.length.of(count - 1); 
+                        response.body.should.have.length.of(count); 
                     })
                     .catch(err => console.error(err));  
     })
@@ -266,29 +294,6 @@ let cookie;
         })
     })
 
-    describe('GET resource for searching', function () {  
-        it('should return a search query', function () {  
-             Transcriptions.on('index', function (err) {
-            if (err) {
-                console.error('User index error: %s', err);
-            } else {
-                console.info('User indexing complete');
-            }
-        });
-            const query = 'great'
-            return tester(app)
-                .post('/transcriptions/search')
-                .set('cookie', cookie)
-                .send({search: query})
-                .then(function (res) {  
-                    console.log(res.body.transcriptions) + 'this one';
-                    res.should.have.status(200);
-                    res.should.be.json;
-                    res.body.should.be.a('object');
-                    res.body.should.include.keys('name', 'uploadedBy', 'docText', 'date', 'dateUploaded', 'sessionNumber');
-                })
-            })
-    })
 
     describe('POST resource for transcriptions', function () {
         it('Should insert a transciption in the databse on POST', function () {
