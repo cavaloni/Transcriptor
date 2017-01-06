@@ -25,6 +25,7 @@ const MOCK_DATA = [{
 }];
 
 const state = {
+    currentRenderedResults : [],
     loggedIn: '',
     project: ''
 };
@@ -51,7 +52,7 @@ $('#my-uploads').on('click', function () {
 })
 
 $('#recent-uploads').on('click', function () {
-    renderRecent();
+    getRecentTranscripts();
 })
 
 $('#help').on('click', function () {
@@ -61,6 +62,8 @@ $('#help').on('click', function () {
 $('.sign-up').on('click', function () {
     renderSignUpPage();
 })
+
+
 
 //-------
 
@@ -75,7 +78,8 @@ function loginUser(username, password) {
             "data": `{\"username\": \"${username}\",\n\t\"password\": \"${password}\"\n}`
              })
         .done(function (msg) {
-            console.log(msg);
+            state.project = msg.project;
+            console.log(state.project);
             renderDash();
         })
         .fail(function (err) {
@@ -126,22 +130,82 @@ function getRecentTranscripts () {
         }
     })
     .done(function (results) {
-        renderRecent(results)
+        addResultsToState(results);
+        renderRecent(results);
     })
     .fail(function (err) {  
         alert('yo shit broke:' + err);
     });
 }
 
-function renderRecent(results) {
-    $('.recent').empty();
+function renderResults(results) {  
+    let counter = 0;
     let recentView = results.map(function (data) {
-        return `<p>${data.name}</p>`
+        counter++
+        let text = data.docText.slice(0, 259);
+        text = text + '.....';
+        let dater = data.date.split('T');
+        let date = dater[0];
+        dater = data.dateUploaded.split('T');
+        let dateupload = dater[0];
+        return `
+        <div class="search-results-box${counter}">
+        <div class="info">
+        <div class="info-line s-name"><span id="first-word">Name of Session: </span>${data.name}</div>
+        <div class="info-line "><span id="first-word">Session Number: </span>${data.sessionNumber}</div>
+        <div class="info-line"><span id="first-word">Date of Session: </span>${date}</div>
+        <div class="info-line"><span id="first-word">Uploaded By: </span>${data.uploadedBy}</div>
+        <div class="info-line"><span id="first-word">Date Uploaded: </span>${dateupload}</div> 
+        </div>
+        <div class="snippet"><span id="first-word">Preview: </span>${text}</div>  
+        <div class="download-doc" id="${counter}"><div class="download-icon"></div>Download Document</div>
+        words
+        </div>
+        </div>`
     });
-    $('.recent').text('Recent Uploads')
-    recentView.forEach((data) => {
-        $('.recent').append(data);
-    });
+    
+    let boxesToRender = recentView.length;
+    counter = 0;
+    renderSearchBoxes();
+
+    function renderSearchBoxes() {
+        counter++
+        console.log(counter);
+        if (counter > boxesToRender) {
+            return
+        }
+        $('.recent').append(recentView[counter - 1]);
+        $(`.search-results-box${counter}`).animate({
+            opacity: 1,
+            height: "140px"
+        }, 400);
+        $(`.search-results-box${counter}`).promise().done(function () {
+            renderSearchBoxes();
+        });
+    };
+    $('.recent').on('click', '.download-doc', function () {  
+        let nameOfSession =  $(this).attr("id");
+        getDocument(nameOfSession);
+})
+}
+
+function renderSearchResults(results) {  
+    console.log(results);
+    if (results === null || results === undefined) {
+        $('.recent').empty();
+        $('.recent').append('<div class="recent-view">No Results</div>');
+    }
+    $('.recent').empty();
+    $('.recent').append('<div class="recent-view">No Results</div>');
+    renderResults(results);
+}
+
+function renderRecent(results) {
+    let results1 = results;
+    console.log(results);
+    $('.recent').empty();
+    $('.recent').append('<div class="recent-view">Recent Uploads</div>');
+    renderResults(results1);
 }
 
 function handleNewUser() {
@@ -192,6 +256,31 @@ function renderMyUploads() {
         });
 }
 
+function getDocument (session) {
+    console.log(state.currentRenderedResults);
+    let thisSession = state.currentRenderedResults[session - 1].name;
+    let thisProject = state.project;
+    console.log(thisSession);
+    $.ajax({
+            type: "GET",
+            url: `http://localhost:8080/transcriptions/download/${thisSession}`,
+            data: `{\"sessionname\": \"${thisSession}\",\n\t\"projectName\": \"${thisProject}\"\n}`,
+            xhrFields: {
+                withCredentials: true
+            },
+            "headers": {
+                "content-type": "application/json",
+                "cache-control": "no-cache",
+            },
+            "processData": false,
+        })
+        .done(function (results) {
+            window.location = `http://localhost:8080/transcriptions/download/${thisSession}`;
+        })
+        .fail(function (err) {
+            alert('cannot get file: ' + err);
+        });
+}
 
 function renderHelpBox() {
     let helpBox = `<div class="help-box-wrapper">
@@ -199,10 +288,18 @@ function renderHelpBox() {
     Transcriptor accepts word documents as file format.
     It can be used, for example, in qualitative research in the humanistic sciences when a team is transcribing interviews.
     </div>
-    </div>`
+    </div>`;
     $('body').append(helpBox);
+    $('.help-box-wrapper').animate({
+        opacity: 1
+    }, 350);
     $('body').on('click', '.help-box-wrapper', function () {
-        $('.help-box-wrapper').remove();
+        $('.help-box-wrapper').animate({
+            opacity: 0
+        }, 250);
+        $('.help-box-wrapper').promise().done(() => {
+            $('.help-box-wrapper').remove()
+        });
     });
 }
 
@@ -224,6 +321,12 @@ function displaySearchPanel() {
 
 }
 
+function addResultsToState(results) {  
+    results.forEach((result) => {
+        state.currentRenderedResults.push(result)
+    })
+}
+
 function getSearchResults (searchTerm) {  
     console.log(searchTerm);
     $.ajax({
@@ -241,7 +344,7 @@ function getSearchResults (searchTerm) {
     })
     .done(function (results) {
         console.log(results);
-        renderRecent(results)
+        renderResults(results);
     })
     .fail(function (err) {  
         alert('yo shit broke:' + err);
@@ -275,6 +378,11 @@ function renderUploadBox() {
         opacity: 1
     }, 300);
     $('body').on('click', '#cancel-upload', function () {
-        $('.upload-box-bg').remove();
+        $('.upload-box-bg').animate({
+            opacity: 0
+        });
+        $('.upload-box-bg').promise().done(() => {
+            $('.upload-box-bg').remove();
+        });
     });
 }

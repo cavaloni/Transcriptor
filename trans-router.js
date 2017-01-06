@@ -8,6 +8,7 @@ const jsonParser = require('body-parser').json();
 const passport = require('passport');
 const textract = require('textract');
 const textSearch = require('mongoose-text-search');
+const path = require('path');
 
 const router = express.Router();
 
@@ -30,8 +31,6 @@ const upload = multer({
 
 //Project Handling
 function getProjectName(user) {  
-     console.log('prooooooooooooop-----------------------------------------------------------------------');
-     console.log(user);
      let project;
      User.findOne({
          username: user
@@ -108,6 +107,22 @@ router.get('/:userid', isAuthenticated,
                 });
             })
             .catch(err => {console.log(err);})    
+    });
+
+router.get('/download/:name', isAuthenticated, 
+    (req, res) => {
+        console.log(req.user.project);
+        console.log(req.params.name);
+        Transcriptions
+            .findOne({
+                projectName: req.user.project,
+                name: req.params.name
+            })
+            .exec()
+            .then(transcription => {                
+                res.download(path.join(__dirname, './', `${transcription.filepath.path}`));
+            })
+            .catch(err => {console.log(err);})
     });
 
 router.post('/upload/:id', isAuthenticated, upload.any(), (req, res) => {

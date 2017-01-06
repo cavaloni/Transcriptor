@@ -1,3 +1,10 @@
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+
 .top-bar {
     margin: 0;
     width: 100%;
@@ -6,7 +13,7 @@
     padding-left: 20px;
     font-size: 20px;
     font-family: 'Julius Sans One', sans-serif;
-    background: url("../img/Untitled-1.gif") right 40px top -40px,
+    background: url("../img/Untitled-1.gif") right 40px top -120px,
     linear-gradient(to left, #76b852, #8DC26F);
     background-size: 50%, cover;
     background-repeat: no-repeat;
@@ -110,12 +117,16 @@
     width: 60%;
     margin-top: 20px;
     margin-left: 20px;
-    border-bottom: 3px solid gray;
-    font-size: 28px;
-    text-indent: 20px;
 }
 
-
+.recent-view {
+    font-size: 28px;
+    text-indent: 20px;
+    width: 100%;
+    font-family: 'News Cycle', sans-serif;
+    border-bottom: 3px solid gray;
+    margin-bottom: 20px;
+}
 
 .hidden {
     display: none;
@@ -166,7 +177,7 @@
     width: 100%;
     height: 100%;
     background-color: rgba(76, 76, 77, 0.57);
-    /*! text-align: center; */
+    text-align: center; 
 }
 
 .upload-box {
@@ -362,6 +373,63 @@ form {
     bottom: 21px;
     right: 50px;
     position: relative;
+}
+
+
+div[class^="search-results-box"] {
+  opacity: 0;
+  box-shadow: 1px 1px 10px;
+  margin: 20px;
+  background-color: white;  
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 22px;
+  font-family: 'Tinos', serif;
+  width: 100%;
+  height: 75px;
+  border-radius: 2px;
+}
+
+#first-word {
+  font-weight: bold;
+}
+
+.info{
+  text-indent: -0;
+  float: left;
+  padding: 5px;
+  display: inline-block;
+  height: 100%;
+  width: 30%;
+
+}
+
+.snippet {
+  padding: 5px;
+  float: left;
+  display: inline-block;
+  width: 45%;
+  height: 100%;
+}
+
+.download-doc {
+  display: inline-block;
+  width: 20%;
+  height: 100%;
+  float: right;
+  text-align: center;
+  font-weight: bold;
+}
+
+.download-icon {
+  margin: 20px auto;
+  height: 60px;
+  width: 60px;
+  background-image: url("../img/file.png");
+}
+
+.download-icon, .download-doc {
+    cursor: pointer;
 }
 
 body {

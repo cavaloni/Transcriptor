@@ -41,7 +41,6 @@ transcriptionSchema.plugin(textSearch);
 
 transcriptionSchema.index({docText: 'text'});
 
-
 const Transcriptions = mongoose.model('transcriptions', transcriptionSchema);
 
 module.exports = {Transcriptions};
