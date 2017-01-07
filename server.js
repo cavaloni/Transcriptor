@@ -17,6 +17,8 @@ const app = express();
 
 const {PORT, DATABASE_URL} = require('./config');
 
+app.disable('etag');
+
 app.use(express.static('public'));
 
 app.use(cookieParser('S3CRE7'));

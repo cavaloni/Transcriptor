@@ -62,6 +62,7 @@ router.get('/', isAuthenticated,
     (req, res) => {
                 Transcriptions
                     .find()
+                    .sort({dateUploaded: -1})
                     .limit(10)
                     .exec()
                     .then(transcriptions => {
@@ -98,6 +99,7 @@ router.get('/:userid', isAuthenticated,
                 projectName: req.user.project,
                 uploadedBy: req.params.userid
             })
+            .sort({dateUploaded: -1})
             .limit(10)
             .exec()
             .then(transcriptions => {
@@ -165,7 +167,6 @@ router.post('/upload/:id', isAuthenticated, upload.any(), (req, res) => {
             })
             .then(transcription => res.status(201).json(transcription.apiRepr()))
             .catch(err => {
-                console.error(err);
                 res.status(500).json({
                     error: 'Something went wrong'
                 });
@@ -173,8 +174,9 @@ router.post('/upload/:id', isAuthenticated, upload.any(), (req, res) => {
     })
 })
 
-router.put('/:id', isAuthenticated, 
+router.post('/:id', isAuthenticated, upload.any(),
     (req, res) => {
+    console.log(req.body);
     if (!(req.params.id === req.body.id)) {
         res.status(400).json({
             error: 'Request path id and request body id values must match'
@@ -183,16 +185,40 @@ router.put('/:id', isAuthenticated,
     const update = {};
     const updatableFields = ['name', 'docText', 'date', 'sessionNumber'];
     updatableFields.forEach(field => {
-        if(field in req.body) {
+        if(field in req.body && req.body[field] !== '') {
             update[field] = req.body[field];
-        }
+        } 
     });
+
+    if (req.files.length > 0) {
+        var path = req.files[0].path;
+        var fileName = req.files[0].originalname;
+        var thisfilepath = {};
+        filepath['path'] = path;
+        filepath['originalname'] = fileName;
+
+        ///text extractor
+        let thisdocText;
+        new Promise((resolve, reject) => {
+                textract.fromFileWithPath(__dirname + `\\uploads\\${fileName}`, function (err, text) {
+                    console.log(err);
+                    thisdocText = text;
+                    resolve();
+                })
+            }).then(() => {
+                update[filepath] = thisfilepath;
+                update[docText] = thisdocText;
+            })
+    }
+
     Transcriptions
         .findByIdAndUpdate(req.params.id, {$set: update}, {new: true})
         .exec()
         .then(updatedTrans => res.status(201).json(updatedTrans.apiRepr()))
-        .catch(err => res.status(500).json({message: 'Something went wrong'}));
+        .catch(err => res.status(500).json({message: err.errors}));
 });
+
+
 
 router.delete('/:id', (req, res) => {
     Transcriptions

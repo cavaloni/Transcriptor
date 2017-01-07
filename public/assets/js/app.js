@@ -144,12 +144,14 @@ function renderResults(results) {
         counter++
         let text = data.docText.slice(0, 259);
         text = text + '.....';
-        let dater = data.date.split('T');
-        let date = dater[0];
-        dater = data.dateUploaded.split('T');
-        let dateupload = dater[0];
+        // let dater = data.date.split('T');
+        // let date = dater[0];
+        // dater = data.dateUploaded.split('T');
+        // let dateupload = dater[0];
+        let date = 2;
+        let dateupload = 2;
         return `
-        <div class="search-results-box${counter}">
+        <div class="search-results-box${counter}" id="${counter}">
         <div class="info">
         <div class="info-line s-name"><span id="first-word">Name of Session: </span>${data.name}</div>
         <div class="info-line "><span id="first-word">Session Number: </span>${data.sessionNumber}</div>
@@ -157,7 +159,7 @@ function renderResults(results) {
         <div class="info-line"><span id="first-word">Uploaded By: </span>${data.uploadedBy}</div>
         <div class="info-line"><span id="first-word">Date Uploaded: </span>${dateupload}</div> 
         </div>
-        <div class="snippet"><span id="first-word">Preview: </span>${text}</div>  
+        <div class="snippet"><span id="first-word">Preview: </span>${text}<div class="admin${counter}">Admin</div></div>  
         <div class="download-doc" id="${counter}"><div class="download-icon"></div>Download Document</div>
         words
         </div>
@@ -183,10 +185,161 @@ function renderResults(results) {
             renderSearchBoxes();
         });
     };
-    $('.recent').on('click', '.download-doc', function () {  
+    $('.recent').on('click', '.download-icon', function () {  
         let nameOfSession =  $(this).attr("id");
         getDocument(nameOfSession);
 })
+    $('.recent').on('click', '[class^=admin]', function () {
+        let thisSearchBox = $(this).parents('[class^=search-results-box]');
+        let thisSearchBoxId= $(this).parents('[class^=search-results-box]').attr("id");
+        handleAdminButtons(thisSearchBox, thisSearchBoxId);
+    });
+}
+
+function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
+    $('.recent').off('click', `[class^=admin]`);
+    let adminButtons = `
+            <div class="delete">
+                <div class="delete-icon"></div>
+            Delete
+            </div>
+            <div class="update">
+                <div class="update-icon"></div>
+                Update
+            </div>`;
+    console.log(thisSearchBox);
+    thisSearchBox.animate({
+        height: "320px"
+    });
+    thisSearchBox.promise().done(function () {
+        thisSearchBox.append(adminButtons).animate({
+            opacity: 1
+        });
+    });
+    $('.recent').on('click', '.delete', function () {
+        let nameOfSession = $(this).parents('[class^=search-results-box]').attr("id");
+        console.log(nameOfSession);
+        deleteDocument(nameOfSession);
+    });
+    $('.recent').on('click', '.update', function () {
+        let nameOfSession = $(this).parents('[class^=search-results-box]').attr("id");
+        updateDocument(nameOfSession);
+    });
+    $('.recent').on('click', `.admin${thisSearchBoxId}`, function () {
+        new Promise((resolve, reject) => {
+            thisSearchBox.find('.delete').remove();
+            thisSearchBox.find('.update').remove();
+            thisSearchBox.animate({
+                height: "140px"
+            });
+            resolve();
+        }).then(() => {
+            $('.recent').off('click', `.admin${thisSearchBoxId}`);
+            $('.recent').on('click', '[class^=admin]', function () {
+                let thisSearchBox = $(this).parents('[class^=search-results-box]');
+                let thisSearchBoxId = $(this).parents('[class^=search-results-box]').attr("id");
+                handleAdminButtons(thisSearchBox, thisSearchBoxId);
+            });
+        });
+    });
+}
+
+//Admin buttons reappearing. Binding issue above? ${thisSearchBoxId}?
+
+
+//
+//Popup message used to verify delete
+//
+function renderPopUp (message, callback) {
+    let uploadBox = `<div class="upload-box-bg">
+        <div class="upload-box warn-delete">
+        ${message}
+        <button class="ok">Ok</button>   
+        <button class="cancel">Cancel</button>
+        </div>
+        </div>`
+    $('body').append(uploadBox);
+    $('.upload-box-bg').animate({
+        opacity: 1
+    }, 50);
+    $('body').on('click', '.ok', function () {
+        $('.upload-box-bg').animate({
+            opacity: 0
+        });
+        $('.upload-box-bg').promise().done(() => {
+            $('.upload-box-bg').remove();
+        });
+        callback();
+    });
+    $('body').on('click', 'cancel', function () { 
+        $('.upload-box-bg').animate({
+            opacity: 0
+        });
+        $('.upload-box-bg').promise().done(() => {
+            $('.upload-box-bg').remove();
+        });
+     })
+
+}
+
+function deleteDocument(session) {
+    console.log(session);
+    let msg = 'Are you sure you want to delete?'
+    renderPopUp(msg, callback)
+    let thisSessionID = state.currentRenderedResults[session - 1].id;
+
+    function callback() {
+        $.ajax({
+                type: "DELETE",
+                url: `http://localhost:8080/transcriptions/${thisSessionID}`,
+            })
+            .done(function (msg) {
+                $(`.search-results-box${session}`).animate({
+                    opacity: 0,
+                    height: "0px"
+                }, 500);
+                $(`.search-results-box${session}`).promise().done(function () {  
+                    $(`.search-results-box${session}`).remove();
+                });
+                delete state.currentRenderedResults[session - 1];
+            })
+            .fail(function (err) {
+                alert(`error ${err}`)
+            });
+    }
+}
+
+function updateDocument(session) {  
+    let thisSessionID = state.currentRenderedResults[session - 1].id;
+    let uploadBox = `<div class="upload-box-bg">
+        <div class="upload-box">Update Transcription
+        <form enctype="multipart/form-data" action="/transcriptions/${thisSessionID}" method="post" id="upload-box-form">
+        <input id="talkname" type="text" name="name" placeholder="New Name (if any)">
+        <br>
+        <input id="date" type="text" name="date" placeholder="New Date (if any)">
+        <br>
+        <input id="sessionnumber" type="text" name="sessionNumber" placeholder="New Session Number (if any)">
+        <br>
+        <input id="wordFile" type="file" name="docUpload" placeholder="New File Doc">
+        <br>
+        <input id="id-for-update" type="text" name="id" value="${thisSessionID}">
+        <input type="submit" value="Update Transcription" id="submit-upload">
+        </form>
+        <div id="cancel-upload">Cancel</div>
+        </div>
+        </div>`
+    $('body').append(uploadBox);
+    $('.upload-box-bg').animate({
+        opacity: 1
+    }, 300);
+    $('body').on('click', '#cancel-upload', function () {
+        $('.upload-box-bg').animate({
+            opacity: 0
+        });
+        $('.upload-box-bg').promise().done(() => {
+            $('.upload-box-bg').remove();
+        });
+    });
 }
 
 function renderSearchResults(results) {  
@@ -196,7 +349,7 @@ function renderSearchResults(results) {
         $('.recent').append('<div class="recent-view">No Results</div>');
     }
     $('.recent').empty();
-    $('.recent').append('<div class="recent-view">No Results</div>');
+    $('.recent').append('<div class="recent-view">Search Results</div>');
     renderResults(results);
 }
 
@@ -242,14 +395,11 @@ function renderMyUploads() {
             }
         })
         .done(function (results) {
+            results1 = results.transcriptions;
             hideSearch();
             $('.recent').empty();
-            let userUploads = results.map(function (data) {
-                return `<p>${data.name}</p>`
-            });
-        });
-    userUploads.forEach((data) => {
-            $('.recent').append(data);
+            $('.recent').append('<div class="recent-view">My Recent Uploads</div>');
+            renderResults(results1)
         })
         .fail(function (err) {
             alert('cannot get results for user:' + err);
@@ -257,10 +407,8 @@ function renderMyUploads() {
 }
 
 function getDocument (session) {
-    console.log(state.currentRenderedResults);
     let thisSession = state.currentRenderedResults[session - 1].name;
     let thisProject = state.project;
-    console.log(thisSession);
     $.ajax({
             type: "GET",
             url: `http://localhost:8080/transcriptions/download/${thisSession}`,
@@ -344,7 +492,7 @@ function getSearchResults (searchTerm) {
     })
     .done(function (results) {
         console.log(results);
-        renderResults(results);
+        renderSearchResults(results);
     })
     .fail(function (err) {  
         alert('yo shit broke:' + err);
