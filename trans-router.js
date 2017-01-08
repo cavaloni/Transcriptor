@@ -58,12 +58,12 @@ var isAuthenticated = function (req, res, next) {
 
 //------------------------endpoints
 
+//Get endpoint for returning recentlt uploaded transcriptions
 router.get('/', isAuthenticated, 
     (req, res) => {
                 Transcriptions
                     .find()
                     .sort({dateUploaded: -1})
-                    .limit(10)
                     .exec()
                     .then(transcriptions => {
                         let foo = transcriptions.map(
@@ -80,20 +80,26 @@ router.get('/', isAuthenticated,
     }
     );
 
+
+//Endpoint to search for transcripions
 router.post('/search', isAuthenticated,
     (req, res) => {
-       Transcriptions
-            .find({ $text : { $search : req.body.search }}, function(err,results){
-                if (err) {console.log(err);}
-                console.log(results + '/////////////');
+        Transcriptions
+            .find({
+                $text: {
+                    $search: req.body.search
+                }
+            }, function (err, results) {
+                if (err) {
+                    console.log(err);
+                }
                 res.send(results);
-            })
-            })
-    
+            });
+    });
 
+//endpoint for uploads that the user has uploaded
 router.get('/:userid', isAuthenticated, 
     (req, res) => {    
-        console.log('========================================================');
         Transcriptions
             .find({
                 projectName: req.user.project,
@@ -111,11 +117,9 @@ router.get('/:userid', isAuthenticated,
             .catch(err => {console.log(err);})    
     });
 
+//endpoint to download document files that have been uploaded
 router.get('/download/:name', isAuthenticated, 
     (req, res) => {
-        console.log('999999999999999999999999999999999999999999999999999');
-        console.log(req.user.project);
-        console.log(req.params.name);
         Transcriptions
             .findOne({
                 projectName: req.user.project,
@@ -128,8 +132,8 @@ router.get('/download/:name', isAuthenticated,
             .catch(err => {console.log(err);})
     });
 
+//Endpoint to post new transcriptions and uploade document
 router.post('/upload/:id', isAuthenticated, upload.any(), (req, res) => {
-    console.log('got to heeeeeeeeeeeeeeeeerrrrrrrrrrrrrrrrrreeeeeeeeeeeeee');
     const requiredFields = ['name', 'date', 'sessionNumber'];
     requiredFields.forEach(field => {
         if (!(field in req.body) || !(req.files)) {
@@ -175,6 +179,7 @@ router.post('/upload/:id', isAuthenticated, upload.any(), (req, res) => {
     })
 })
 
+//updater for transcripions
 router.post('/:id', isAuthenticated, upload.any(),
     (req, res) => {
     console.log(req.body);
@@ -191,7 +196,7 @@ router.post('/:id', isAuthenticated, upload.any(),
         } 
     });
 
-    if (req.files.length > 0) {
+    if (req.files.length > 0) {         //only process files if they are attached
         var path = req.files[0].path;
         var fileName = req.files[0].originalname;
         var thisfilepath = {};
@@ -218,8 +223,6 @@ router.post('/:id', isAuthenticated, upload.any(),
         .then(updatedTrans => res.status(201).json(updatedTrans.apiRepr()))
         .catch(err => res.status(500).json({message: err.errors}));
 });
-
-
 
 router.delete('/:id', (req, res) => {
     Transcriptions

@@ -1,10 +1,12 @@
+// Global state variable
+
 const state = {
     currentRenderedResults : [],
     loggedIn: '',
     project: ''
 };
 
-//Event Listeners
+//Initial Event Listeners
 $('.sign-in-button').click(function (e) {
     e.preventDefault();
     var username =  $('#email').val();
@@ -39,7 +41,7 @@ $('.sign-up').on('click', function () {
 
 
 
-//-------
+//-------Log-in function handlers
 
 function loginUser(username, password) {
     state.loggedIn = username;
@@ -53,7 +55,6 @@ function loginUser(username, password) {
              })
         .done(function (msg) {
             state.project = msg.project;
-            console.log(state.project);
             renderDash();
         })
         .fail(function (err) {
@@ -64,17 +65,11 @@ function loginUser(username, password) {
 function renderFailedLogin () {  
     let incorrectAlert = `<div class="incorrect">
     Incorrect Username/Password</div>`
-    $('.signup-box').append(incorrectAlert);
+    $('.signin-box').append(incorrectAlert);
 }
 
-
-function renderDash () {  
-    $('.sign-up-page').remove();
-    $('.app-wrapper').removeClass('hidden');
-    $('.logged-in').text(`Hello, ${state.loggedIn}`);
-    getRecentTranscripts();
-}
-
+//Function to render sign up page and listen for actions
+//Then register new user and render the "dash"
 
 function renderSignUpPage() {
     $('.sign-up-page').empty();
@@ -97,33 +92,103 @@ function renderSignUpPage() {
     })
 }
 
-function getRecentTranscripts () {
+function handleNewUser() {
+    let pWord = $('#new-password').val();
+    let uName = $('#new-username').val();
+    let pName = $('#project').val();
     $.ajax({
-        type: "GET",
-        url: "http://localhost:8080/transcriptions",
-        xhrFields: {
-      withCredentials: true
-        }
-    })
-    .done(function (results) {
-        addResultsToState(results);
-        renderRecent(results);
-    })
-    .fail(function (err) {  
-        alert('yo shit broke:' + err);
-    });
+            type: "POST",
+            "processData": false,
+            "data": `{\"username\": \"${uName}\",\n\t\"password\": \"${pWord}\",\n\t\"project\": \"${pName}\"\n}`,
+            url: 'http://localhost:8080/users',
+            "headers": {
+                "content-type": "application/json",
+                "cache-control": "no-cache",
+            },
+        })
+        .done(function (msg) {
+            state.project = msg.project;
+            loginUser(uName, pWord);
+        })
+        .fail(function (err) {
+            alert(`error ${err}`)
+        });
 }
+
+//
+//Initial "Dash" rendering function
+//
+function renderDash () {  
+    $('.sign-up-page').remove();
+    $('.app-wrapper').removeClass('hidden');
+    $('.logged-in').text(`Hello, ${state.loggedIn}`);
+    getRecentTranscripts();
+}
+
+//Initial preperation for recent, user, search bar, and search results rendering
+
+function displaySearchPanel() {
+    $('.recent').empty();
+    $('.search-bar').removeClass('hidden');
+    $('.js-first-search-button').click(function (e) {
+        let searchTerm = $('#searchterm').val();
+        e.preventDefault();
+        getSearchResults(searchTerm);
+    })
+}
+
+function renderSearchResults(results) {  
+    $('.recent').empty();
+    $('.recent').append('<div class="recent-view">Search Results</div>');
+    if (results === null || results === undefined || results.length < 1) {
+        $('.recent').append('<div class="no-results">No Results</div>');
+    }
+    renderResults(results);
+}
+
+function renderRecent(results) {
+    let results1 = results;
+    $('.recent').empty();
+    $('.recent').append('<div class="recent-view">Recent Uploads</div>');
+    renderResults(results1);
+}
+
+function renderMyUploads() {
+    user = state.loggedIn;
+    $.ajax({
+            type: "GET",
+            url: `http://localhost:8080/transcriptions/${user}`,
+            xhrFields: {
+                withCredentials: true
+            }
+        })
+        .done(function (results) {
+            results1 = results.transcriptions;
+            $('.search-bar').addClass('hidden');
+            $('.recent').empty();
+            $('.recent').append('<div class="recent-view">My Recent Uploads</div>');
+            renderResults(results1)
+        })
+        .fail(function (err) {
+            alert('cannot get results for user:' + err);
+        });
+}
+
+
+//-------Results boxes functions-----------
+//Function to render results from all types of queries:
+//Recent from project, recent from user, and search results
 
 function renderResults(results) {  
     let counter = 0;
     let recentView = results.map(function (data) {
-        counter++
-        let text = data.docText.slice(0, 259);
-        text = text + '.....';
-        let dater = data.date.split('T');
-        let date = dater[0];
-        dater = data.dateUploaded.split('T');
-        let dateupload = dater[0];
+        counter++       //counter to add to ID's of search-results to identify what 'this' refers to
+        let text = data.docText.slice(0, 259);      //
+        text = text + '.....';                      //
+        let dater = data.date.split('T');           //  Format the date to a more readable version
+        let date = dater[0];                        //
+        dater = data.dateUploaded.split('T');       //
+        let dateupload = dater[0];                  //
         return `
         <div class="search-results-box${counter}" id="${counter}">
         <div class="info">
@@ -142,11 +207,10 @@ function renderResults(results) {
     
     let boxesToRender = recentView.length;
     counter = 0;
-    renderSearchBoxes();
+    renderResultsBoxes();
 
-    function renderSearchBoxes() {
-        counter++
-        console.log(counter);
+    function renderResultsBoxes() {          //recursive function so that boxes render individually
+        counter++                           //for a better looking display
         if (counter > boxesToRender) {
             return
         }
@@ -156,16 +220,14 @@ function renderResults(results) {
             height: "140px"
         }, 400);
         $(`.search-results-box${counter}`).promise().done(function () {
-            renderSearchBoxes();
+            renderResultsBoxes();            //Recursive call once animation is done
         });
     };
-    $('.recent').on('click', '.download-icon', function () {  
-        console.log($(this));
+    $('.recent').on('click', '.download-icon', function () {  //listen for download click
         let nameOfSession =  $(this).attr("id");
-        console.log(nameOfSession);
         getDocument(nameOfSession);
 })
-    $('.recent').on('click', '[class^=admin]', function () {
+    $('.recent').on('click', '[class^=admin]', function () {        //admin button listener
         let thisSearchBox = $(this).parents('[class^=search-results-box]');
         let thisSearchBoxId= $(this).parents('[class^=search-results-box]').attr("id");
         handleAdminButtons(thisSearchBox, thisSearchBoxId);
@@ -173,7 +235,7 @@ function renderResults(results) {
 }
 
 function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
-    $('.recent').off('click', `[class^=admin]`);
+    $('.recent').off('click', `[class^=admin]`);   
     let adminButtons = `
             <div class="delete">
                 <div class="delete-icon"></div>
@@ -193,7 +255,6 @@ function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
     });
     $('.recent').on('click', '.delete', function () {
         let nameOfSession = $(this).parents('[class^=search-results-box]').attr("id");
-        console.log(nameOfSession);
         deleteDocument(nameOfSession);
     });
     $('.recent').on('click', '.update', function () {
@@ -209,8 +270,8 @@ function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
             });
             resolve();
         }).then(() => {
-            $('.recent').off('click', `.admin${thisSearchBoxId}`);
-            $('.recent').on('click', '[class^=admin]', function () {
+            $('.recent').off('click', `.admin${thisSearchBoxId}`);      //turn off binding and re-listen only
+            $('.recent').on('click', '[class^=admin]', function () {    //when animation is complete
                 let thisSearchBox = $(this).parents('[class^=search-results-box]');
                 let thisSearchBoxId = $(this).parents('[class^=search-results-box]').attr("id");
                 handleAdminButtons(thisSearchBox, thisSearchBoxId);
@@ -219,23 +280,49 @@ function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
     });
 }
 
-//Admin buttons reappearing. Binding issue above? ${thisSearchBoxId}?
+//Delete function on each of the results boxes 
+
+function deleteDocument(session) {
+    let msg = 'Are you sure you want to delete?'
+    renderPopUp(msg, callback)
+    let thisSessionID = state.currentRenderedResults[session - 1].id;
+
+    function callback() {
+        $.ajax({
+                type: "DELETE",
+                url: `http://localhost:8080/transcriptions/${thisSessionID}`,
+            })
+            .done(function (msg) {
+                $(`.search-results-box${session}`).animate({
+                    opacity: 0,
+                    height: "0px"
+                }, 500);
+                $(`.search-results-box${session}`).promise().done(function () {  
+                    $(`.search-results-box${session}`).remove();
+                    getRecentTranscripts();
+                });
+                
+            })
+            .fail(function (err) {
+                alert(`error ${err}`)
+            });
+    }
+}
 
 
 //
-//Popup message used to verify delete
+//Popup message used to verify delete and to notify of completion of upload and updates
 //
 function renderPopUp (message, callback, noCancel) {
-    console.log(noCancel);
     let popup = `<div class="help-box-wrapper">
-        <div class="upload-box warn-delete">
+        <div class="submission-box warn-delete">
         ${message}<br>
         <button class="ok">Ok</button>   
         <button class="cancel">Cancel</button>
         </div>
         </div>`
     $('body').append(popup);
-    if (noCancel === 'true') {
+    if (noCancel === 'true') {          //no cancel button needed to update and upload notification
         $('.cancel').addClass('hidden');
     }
     $('.help-box-wrapper').animate({
@@ -263,39 +350,14 @@ function renderPopUp (message, callback, noCancel) {
 
 }
 
-function deleteDocument(session) {
-    console.log(session);
-    let msg = 'Are you sure you want to delete?'
-    renderPopUp(msg, callback)
-    let thisSessionID = state.currentRenderedResults[session - 1].id;
-
-    function callback() {
-        $.ajax({
-                type: "DELETE",
-                url: `http://localhost:8080/transcriptions/${thisSessionID}`,
-            })
-            .done(function (msg) {
-                $(`.search-results-box${session}`).animate({
-                    opacity: 0,
-                    height: "0px"
-                }, 500);
-                $(`.search-results-box${session}`).promise().done(function () {  
-                    $(`.search-results-box${session}`).remove();
-                    getRecentTranscripts();
-                });
-                
-            })
-            .fail(function (err) {
-                alert(`error ${err}`)
-            });
-    }
-}
+//Function to render the Update document dialog box,
+//as well as to listen for submission and cancel
 
 function updateDocument(session) {  
     let thisSessionID = state.currentRenderedResults[session - 1].id;
-    let uploadBox = `<div class="upload-box-bg">
-        <div class="upload-box">Update Transcription
-        <form enctype="multipart/form-data" action="/transcriptions/${thisSessionID}" method="post" id="upload-box-form">
+    let uploadBox = `<div class="submission-box-wrapper">
+        <div class="submission-box">Update Transcription
+        <form enctype="multipart/form-data" action="/transcriptions/${thisSessionID}" method="post" id="submission-box-form">
         <input id="talkname" type="text" name="name" placeholder="New Name (if any)">
         <br>
         <input id="date" type="text" name="date" placeholder="New Date (if any)">
@@ -311,18 +373,18 @@ function updateDocument(session) {
         </div>
         </div>`
     $('body').append(uploadBox);
-    $('.upload-box-bg').animate({
+    $('.submission-box-wrapper').animate({
         opacity: 1
     }, 300);
     $('body').on('click', '#cancel-upload', function () {
-        $('.upload-box-bg').animate({
+        $('.submission-box-wrapper').animate({
             opacity: 0
         });
-        $('.upload-box-bg').promise().done(() => {
-            $('.upload-box-bg').remove();
+        $('.submission-box-wrapper').promise().done(() => {
+            $('.submission-box-wrapper').remove();
         });
     });
-     $('form#upload-box-form').submit(function (e) {
+     $('form#submission-box-form').submit(function (e) {
         e.preventDefault();
         var formData = new FormData($(this)[0]);
         thisurl = $(this).attr("action");
@@ -333,82 +395,150 @@ function updateDocument(session) {
             processData: false,
             contentType: false,
             success: function (response) {
-                $('.upload-box-bg').animate({
+                $('.submission-box-wrapper').animate({
                     opacity: 0
                 });
-                $('.upload-box-bg').promise().done(() => {
-                    $('.upload-box-bg').remove();
+                $('.submission-box-wrapper').promise().done(() => {
+                    $('.submission-box-wrapper').remove();
                 });
-                renderPopUp('Transcription Updated', getRecentTranscripts, 'true')
+                renderPopUp('Transcription Updated', getRecentTranscripts, 'true')      //notify of successful completion
             },
             error: function (jqXHR, textStatus, errorMessage) {
-                console.log(errorMessage); // Optional
+                renderPopUp(`Something went wrong: ${errorMessage}`, updateDocument, 'true') //and of error
             }
         });
     });
 }
 
-function renderSearchResults(results) {  
-    console.log(results);
-    $('.recent').empty();
-    $('.recent').append('<div class="recent-view">Search Results</div>');
-    if (results === null || results === undefined || results.length < 1) {
-        $('.recent').append('<div class="no-results">No Results</div>');
-    }
-    renderResults(results);
-}
+//
+// Function to render the upload box as well as to listen for submission
 
-function renderRecent(results) {
-    let results1 = results;
-    console.log(results);
-    $('.recent').empty();
-    $('.recent').append('<div class="recent-view">Recent Uploads</div>');
-    renderResults(results1);
-}
-
-function handleNewUser() {
-    let pWord = $('#new-password').val();
-    let uName = $('#new-username').val();
-    let pName = $('#project').val();
-    $.ajax({
+function renderUploadBox() {
+    let uploadBox = `<div class="submission-box-wrapper">
+        <div class="submission-box">Upload Transcription
+        <form enctype="multipart/form-data" action="/transcriptions/upload/${state.loggedIn}" method="post" id="submission-box-form">
+        <input id="talkname" type="text" name="name" placeholder="Name of Session">
+        <br>
+        <input id="date" type="text" name="date" placeholder="Date of Recording">
+        <br>
+        <input id="sessionnumber" type="text" name="sessionNumber" placeholder="Session Number">
+        <br>
+        <input id="wordFile" type="file" name="docUpload">
+        <br>
+        <input type="submit" value="Submit" id="submit-upload">
+        </form>
+        <div id="cancel-upload">Cancel</div>
+        </div>
+        </div>`
+    $('body').append(uploadBox);
+    $('.submission-box-wrapper').animate({
+        opacity: 1
+    }, 300);
+    $('body').on('click', '#cancel-upload', function () {
+        $('.submission-box-wrapper').animate({
+            opacity: 0
+        });
+        $('.submission-box-wrapper').promise().done(() => {
+            $('.submission-box-wrapper').remove();
+        });
+    });
+    $('form#submission-box-form').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData($(this)[0]);        //get form data from this form
+        thisurl = $(this).attr("action");               //to use in ajax request
+        $.ajax({
+            url: `${thisurl}`,
             type: "POST",
-            "processData": false,
-            "data": `{\"username\": \"${uName}\",\n\t\"password\": \"${pWord}\",\n\t\"project\": \"${pName}\"\n}`,
-            url: 'http://localhost:8080/users',
-            "headers": {
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $('.submission-box-wrapper').animate({
+                    opacity: 0
+                });
+                $('.submission-box-wrapper').promise().done(() => {
+                    $('.submission-box-wrapper').remove();
+                });
+                renderPopUp('Transcription Uploaded', getRecentTranscripts, 'true');
+            },
+            error: function (jqXHR, textStatus, errorMessage) {
+                renderPopUp(`Something went wrong: ${errorMessage}`);
+            }
+        });
+    });
+}
+
+
+
+//
+//function for brief help box
+
+function renderHelpBox() {
+    let helpBox = `<div class="help-box-wrapper">
+    <div class="help-box">Transcriptor is a tool for those to store and search transcriptions.
+    Transcriptor accepts word documents as file format.
+    It can be used, for example, in qualitative research in the humanistic sciences when a team is transcribing interviews.
+    </div>
+    </div>`;
+    $('body').append(helpBox);
+    $('.help-box-wrapper').animate({
+        opacity: 1
+    }, 350);
+    $('body').on('click', '.help-box-wrapper', function () {
+        $('.help-box-wrapper').animate({
+            opacity: 0
+        }, 250);
+        $('.help-box-wrapper').promise().done(() => {
+            $('.help-box-wrapper').remove()
+        });
+    });
+}
+
+
+
+//
+//------------The "getters": Search, recent project uploads, recent user uploads
+//
+
+function getSearchResults (searchTerm) {  
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/transcriptions/search",
+        dataType: 'json',
+        data: `{"search": "${searchTerm}"}`,
+        xhrFields: {
+        withCredentials: true
+        },
+        "headers": {
                 "content-type": "application/json",
                 "cache-control": "no-cache",
             },
-        })
-        .done(function (msg) {
-            state.project = msg.project;
-            loginUser(uName, pWord);
-        })
-        .fail(function (err) {
-            alert(`error ${err}`)
-        });
+    })
+    .done(function (results) {
+        renderSearchResults(results);
+    })
+    .fail(function (err) {  
+        alert('yo shit broke:' + err);
+    });
 }
 
-
-function renderMyUploads() {
-    user = state.loggedIn;
+function getRecentTranscripts () {
     $.ajax({
-            type: "GET",
-            url: `http://localhost:8080/transcriptions/${user}`,
-            xhrFields: {
-                withCredentials: true
-            }
-        })
-        .done(function (results) {
-            results1 = results.transcriptions;
-            hideSearch();
-            $('.recent').empty();
-            $('.recent').append('<div class="recent-view">My Recent Uploads</div>');
-            renderResults(results1)
-        })
-        .fail(function (err) {
-            alert('cannot get results for user:' + err);
-        });
+        type: "GET",
+        url: "http://localhost:8080/transcriptions",
+        xhrFields: {
+      withCredentials: true
+        }
+    })
+    .done(function (results) {
+        results.forEach((result) => {               //Add the results to state var
+        state.currentRenderedResults.push(result)
+    });
+        renderRecent(results);
+    })
+    .fail(function (err) {  
+        alert('yo shit broke:' + err);
+    });
 }
 
 function getDocument (session) {
@@ -434,135 +564,3 @@ function getDocument (session) {
             alert('cannot get file: ' + err);
         });
 }
-
-function renderHelpBox() {
-    let helpBox = `<div class="help-box-wrapper">
-    <div class="help-box">Transcriptor is a tool for those to store and search transcriptions.
-    Transcriptor accepts word documents as file format.
-    It can be used, for example, in qualitative research in the humanistic sciences when a team is transcribing interviews.
-    </div>
-    </div>`;
-    $('body').append(helpBox);
-    $('.help-box-wrapper').animate({
-        opacity: 1
-    }, 350);
-    $('body').on('click', '.help-box-wrapper', function () {
-        $('.help-box-wrapper').animate({
-            opacity: 0
-        }, 250);
-        $('.help-box-wrapper').promise().done(() => {
-            $('.help-box-wrapper').remove()
-        });
-    });
-}
-
-function hideSearch() {
-    $('.search-bar').addClass('hidden');
-}
-
-
-function displaySearchPanel() {
-    $('.recent').empty();
-    $('.search-bar').removeClass('hidden');
-    $('.js-first-search-button').click(function (e) {
-        let searchTerm = $('#searchterm').val();
-        console.log(searchTerm);
-        e.preventDefault();
-        getSearchResults(searchTerm);
-        displaySearchResults();
-    })
-
-}
-
-function addResultsToState(results) {  
-    results.forEach((result) => {
-        state.currentRenderedResults.push(result)
-    })
-}
-
-function getSearchResults (searchTerm) {  
-    console.log(searchTerm);
-    $.ajax({
-        type: "POST",
-        url: "http://localhost:8080/transcriptions/search",
-        dataType: 'json',
-        data: `{"search": "${searchTerm}"}`,
-        xhrFields: {
-        withCredentials: true
-        },
-        "headers": {
-                "content-type": "application/json",
-                "cache-control": "no-cache",
-            },
-    })
-    .done(function (results) {
-        console.log(results);
-        renderSearchResults(results);
-    })
-    .fail(function (err) {  
-        alert('yo shit broke:' + err);
-    });
-}
-
-
-function displaySearchResults() {
-    renderRecent();
-}
-
-function renderUploadBox() {
-    let uploadBox = `<div class="upload-box-bg">
-        <div class="upload-box">Upload Transcription
-        <form enctype="multipart/form-data" action="/transcriptions/upload/${state.loggedIn}" method="post" id="upload-box-form">
-        <input id="talkname" type="text" name="name" placeholder="Name of Session">
-        <br>
-        <input id="date" type="text" name="date" placeholder="Date of Recording">
-        <br>
-        <input id="sessionnumber" type="text" name="sessionNumber" placeholder="Session Number">
-        <br>
-        <input id="wordFile" type="file" name="docUpload">
-        <br>
-        <input type="submit" value="Submit" id="submit-upload">
-        </form>
-        <div id="cancel-upload">Cancel</div>
-        </div>
-        </div>`
-    $('body').append(uploadBox);
-    $('.upload-box-bg').animate({
-        opacity: 1
-    }, 300);
-    $('body').on('click', '#cancel-upload', function () {
-        $('.upload-box-bg').animate({
-            opacity: 0
-        });
-        $('.upload-box-bg').promise().done(() => {
-            $('.upload-box-bg').remove();
-        });
-    });
-    $('form#upload-box-form').submit(function (e) {
-        console.log('thisworked');
-        e.preventDefault();
-        var formData = new FormData($(this)[0]);
-        thisurl = $(this).attr("action");
-        $.ajax({
-            url: `${thisurl}`,
-            type: "POST",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                $('.upload-box-bg').animate({
-                    opacity: 0
-                });
-                $('.upload-box-bg').promise().done(() => {
-                    $('.upload-box-bg').remove();
-                });
-                renderPopUp('Transcription Uploaded', getRecentTranscripts, 'true')
-            },
-            error: function (jqXHR, textStatus, errorMessage) {
-                console.log(errorMessage); // Optional
-            }
-        });
-    });
-}
-
-//Trying to get it to submit with reloading the page to the JSON resp

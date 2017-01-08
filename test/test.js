@@ -15,7 +15,7 @@ var agent = superagent.agent();
 
 chai.use(chaiHttp);
 
-// mongoose.set('debug', true);
+//generators for random document insertions
 
 function generateName () {
     return faker.name.firstName();
@@ -80,9 +80,8 @@ function generateControlTranscriptionData() {
 
 function seedTransData() {
     console.log('seeding transcription data');
-    const seedData = [];
-    //ned a predictable piece of data for certain search tests
-    let controlData = generateControlTranscriptionData();
+    const seedData = [];                                    //need a predictable piece of data for certain search tests
+    let controlData = generateControlTranscriptionData();   //
 
     for (let i = 0; i <= 10; i++) {
         seedData[i] = generateTranscriptionData();
@@ -104,8 +103,8 @@ function tearDownDB() {
 
 describe('Transcriptor API resource', function () {
 
-let cookie;
-
+let cookie;             //need a cookie to be passed between each test so that
+                        //Authentication passes on protected endpoints
     before(function () {
         return runServer();
     });
@@ -140,36 +139,6 @@ let cookie;
         cookie = res.headers['set-cookie'];
         });
     });
-    
-    // describe('New user', function () {  
-    //     it('should register a new user', function () {  
-    //         return tester(app)
-    //             .post('/users')
-    //             .send({
-    //                 username: 'george',
-    //                 password: 'mainstay'
-    //             })
-    //             .then(function (res) {  
-    //                 res.should.have.status(201)
-    //                 res.should.be.json;
-    //             });
-    //     });
-    // })
-
-    // describe('User login endpoint', function () {  
-    //     it('should log a user in', function () {  
-    //         return tester(app)
-    //             .post('/users/login')
-    //             .send({
-    //                 username: 'henry',
-    //                 password: 'johnson123'
-    //             })
-    //             .auth('henry', 'johnson123')
-    //             .then(function (res) {                   
-    //                 res.should.have.status(200);
-    //             });
-    //     });
-    // });
 
  describe('GET resource for searching', function () {  
         it('should return a search query', function () {  
@@ -186,10 +155,6 @@ let cookie;
                 .set('cookie', cookie)
                 .send({search: query})
                 .then(function (res) {  
-                    console.log('------------------123456780--------------------------');
-                    console.log(res);
-                    console.log(res.body);
-                    console.log(res.body[0] + 'this one');
                     res.should.have.status(200);
                     res.should.be.json;
                     res.body.should.be.a('array');
@@ -201,38 +166,20 @@ let cookie;
     })
 
     describe('GET Resource', function () {
-    // it('should return all transcriptions in databse on GET', function () {
-    //      return tester(app) //First log user in
-    //         .post('/users/login')
-    //         .auth('henry', 'johnson123')
-    //         .send({
-    //                 username: 'henry',
-    //                 password: 'johnson123'
-    //             })
-    //         .then(function (res) {
-    //             cookie = res.headers['set-cookie'];
-    //             console.log('this worked before-----------------');
-    //             res.should.have.status(200);
-    //             expect(res).to.have.cookie('connect.sid');
-    //         });
-            
-    // });
-
     it('should get all transcriptions', function () {  
         let response;
         return tester(app)
                     .get('/transcriptions')
                     .set('cookie', cookie)
                     .then(function (res) {
-                        console.log(res.body);
                         res.should.have.status(200);
                         res.should.be.json;
                         res.body.should.have.length.of.at.least(1);
                         response = res;
                         return Transcriptions.count();
                     })
-                    .then(count => {
-                        response.body.should.have.length.of(count); 
+                    .then(count => { 
+                        response.body.should.have.length.of(count);                        
                     })
                     .catch(err => console.error(err));  
     })
@@ -275,17 +222,14 @@ let cookie;
                     res.should.be.json;
                     res.body.transcriptions.should.be.a('array');
                     res.body.transcriptions.should.have.length.of.at.least(1);
-                    console.log('**************made it here');
                     res.body.transcriptions.forEach(function (transcription) {
                         transcription.should.be.a('object');
                         transcription.should.include.keys('id', 'name', 'docText', 'date', 'dateUploaded', 'sessionNumber');
                     });
-                    console.log(res.body);
                     resTranscription = res.body.transcriptions[0].id;
                     trans = res.body.transcriptions[0];
                     return Transcriptions.findById(resTranscription)
                     .then(function (item) {
-                            console.log('**************and here');
                             item.id.should.equal(trans.id);
                             item.name.should.equal(trans.name);
                             item.sessionNumber.should.equal(trans.sessionNumber);
@@ -334,7 +278,7 @@ let cookie;
 
     describe('POST resource for updating transcriptions', function () {
         it('Should update transcriptions on POST', function () {
-            const update = {
+            let update = {
                 name: faker.name,
                 sessionNumber: faker.random,
                 docText: faker.Lorem,
@@ -346,6 +290,7 @@ let cookie;
 
                     return tester(app)
                         .post(`/transcriptions/${trans.id}`)
+                        .set('cookie', cookie)
                         .send(update)
                 })
                 .then(function (res) {
@@ -364,7 +309,7 @@ let cookie;
 
  describe('GET resource for transcription download', function () {
         it('Should download a document on GET', function () {
-            newTranscription = {
+            let newTranscription = {
                 projectName: "wierd",
                 name: 'John Doe',
                 date: '12/12/12',
@@ -380,15 +325,13 @@ let cookie;
                 .field('sessionNumber', 2)
                 .attach('file', './uploads/8859-1.txt')
                 .then((res1) => {
-                    console.log('right about here !)!)!)!)!)!)!)!)!)!)!)!)!)!)!)!)!)!)!)!');
-                    console.log(res1.body);
-                    tester(app)
+                    return tester(app)
                     .get(`/transcriptions/download/${res1.body.name}`)
+                    .set('cookie', cookie)
                     .send({project: `${res1.body.project}`})
                     .then((res) => {
                         res.should.have.status(200);
                     })
-                    .done();
                 });
         });
     });

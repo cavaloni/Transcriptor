@@ -18,13 +18,11 @@ router.use(jsonParser);
 
 //------New user
 router.post('/', function (req, res) {
-    console.log(`Request Body : ${req.body}`);
     if (!req.body) {
         return res.status(400).json({
             message: `No request body`
         });
     }
-    console.log(req.body);
     if (!('username' in req.body)) {
         return res.status(422).json({
             message: 'Missing field: username'
@@ -132,11 +130,10 @@ router.post('/', function (req, res) {
 
 router.post('/login', function(req, res, next) {
   passport.authenticate('basic', function(err, user, info) {
-    if (err) { return console.log('somethind done did went wroned'); }
+    if (err) { return console.log('Error authenticating user'); }
     if (!user) { return res.redirect('/login'); }
     req.logIn(user, function(err) {
-      if (err) { return console.log('somethind done did went wroned'); }
-      console.log('logged in');
+      if (err) { return console.log('Error authenticating user'); }
       return res.status(200).json({project: user.project});
     });
   })(req, res, next);

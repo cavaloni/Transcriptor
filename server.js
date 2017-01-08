@@ -1,4 +1,4 @@
-require('@risingstack/trace');
+require('@risingstack/trace'); //tool for debugging node apps
 const {BasicStrategy} = require('passport-http');
 const passport = require('passport');
 const session = require('express-session');
@@ -33,7 +33,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-
+//passport authorization functions
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
@@ -52,7 +52,6 @@ const basicStrategy = new BasicStrategy(function(username, password, callback) {
     .exec()
     .then(_user => {
       user = _user;
-      console.log(user + '11111111111111111111111111111111111111');
       if (!user) {
         return callback(null, false, {message: 'Incorrect username'});
       }
@@ -72,7 +71,8 @@ app.use('/users/', usersRouter);
 passport.use(basicStrategy);
 app.use('/transcriptions', transRouter);
 
-let server;
+let server; //Define server here so that the same instance of server
+            //is accessible in both functions
 
 function runServer () { 
     return new Promise((resolve, reject) => {
