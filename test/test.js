@@ -256,7 +256,7 @@ let cookie;             //need a cookie to be passed between each test so that
                 .field('date', '12/12/12')
                 .field('sessionNumber', 2)
 
-                .attach('file', './uploads/8859-1.txt')
+                .attach('file', './uploads/test.txt')
                 .then(function (res) {
                     res.should.have.status(201);
                     res.should.be.json;
@@ -323,7 +323,7 @@ let cookie;             //need a cookie to be passed between each test so that
                 .field('name', 'John Doe')
                 .field('date', '12/12/12')
                 .field('sessionNumber', 2)
-                .attach('file', './uploads/8859-1.txt')
+                .attach('file', './uploads/test.txt')
                 .then((res1) => {
                     return tester(app)
                     .get(`/transcriptions/download/${res1.body.name}`)
