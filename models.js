@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const textSearch = require('mongoose-text-search');
+
 
 
 const transcriptionSchema = mongoose.Schema ({ 
@@ -36,8 +36,6 @@ transcriptionSchema.methods.apiRepr = function () {
         uploadedBy: this.uploadedBy
     };
 }
-
-transcriptionSchema.plugin(textSearch);
 
 transcriptionSchema.index({docText: 'text'});
 

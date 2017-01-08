@@ -7,7 +7,6 @@ const multer = require('multer');
 const jsonParser = require('body-parser').json();
 const passport = require('passport');
 const textract = require('textract');
-const textSearch = require('mongoose-text-search');
 const path = require('path');
 
 const router = express.Router();
