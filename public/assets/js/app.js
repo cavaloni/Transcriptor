@@ -351,12 +351,11 @@ function updateDocument(session) {
 
 function renderSearchResults(results) {  
     console.log(results);
-    if (results === null || results === undefined) {
-        $('.recent').empty();
-        $('.recent').append('<div class="recent-view">No Results</div>');
-    }
     $('.recent').empty();
     $('.recent').append('<div class="recent-view">Search Results</div>');
+    if (results === null || results === undefined || results.length < 1) {
+        $('.recent').append('<div class="no-results">No Results</div>');
+    }
     renderResults(results);
 }
 

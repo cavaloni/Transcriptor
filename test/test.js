@@ -380,13 +380,15 @@ let cookie;
                 .field('sessionNumber', 2)
                 .attach('file', './uploads/8859-1.txt')
                 .then((res1) => {
+                    console.log('right about here !)!)!)!)!)!)!)!)!)!)!)!)!)!)!)!)!)!)!)!');
                     console.log(res1.body);
-                    return tester(app)
+                    tester(app)
                     .get(`/transcriptions/download/${res1.body.name}`)
                     .send({project: `${res1.body.project}`})
                     .then((res) => {
                         res.should.have.status(200);
                     })
+                    .done();
                 });
         });
     });
