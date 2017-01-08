@@ -338,16 +338,6 @@ form {
     text-align: center;
 }
 
-.new-signup-box {
-    position: absolute;
-    top: 200px;
-    left: calc(50% - 100px);
-    height: 240px;
-    width: 200px;
-}
-
-
-
 .sign-in-button,
 .new-sign-in-button {
     margin-top: 30px;
