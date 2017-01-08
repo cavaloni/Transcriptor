@@ -1,29 +1,3 @@
-const MOCK_DATA = [{
-    id: 222000123,
-    name: 'Diamond Guidance',
-    docText: 'Here is a very long cool talk about a lot of cool stuff that probably most people want to know about but just dont',
-    date: '10-12-2002',
-    dateUploaded: '10-12-2016',
-    sessionNumber: 2,
-    uploadedBy: 'Jane Smith'
-}, {
-    id: 588592001,
-    name: 'Diamond Will',
-    docText: 'Here is a very vaery long cool talk about a lot of cool stuff that probably most people want to know about but just dont',
-    date: '11-10-2002',
-    dateUploaded: '10-14-2016',
-    sessionNumber: 2,
-    uploadedBy: 'Jane Smith'
-}, {
-    id: 388901053,
-    name: 'Diamond Dome',
-    docText: 'Here is a very very very long cool talk about a lot of cool stuff that probably most people want to know about but just dont',
-    date: '10-11-2002',
-    dateUploaded: '10-16-2016',
-    sessionNumber: 2,
-    uploadedBy: 'John Smith'
-}];
-
 const state = {
     currentRenderedResults : [],
     loggedIn: '',
@@ -106,17 +80,19 @@ function renderSignUpPage() {
     $('.sign-up-page').empty();
     let signUpPage = `<div class="new-signup-box">
             <form action="#" class="sign-up-form">
-                <input type="text" id="new-username">
                 <label for="username">Username</label>
+                <input type="text" id="new-username">
+                 <label for="password">Password</label>
                 <input type="text" id="new-password">
-                <label for="password">Password</label>
+                 <label for="project">Project</label>
                 <input type="text" id="project">
-                <label for="project">Project</label>
                 </form>
                 <button type="submit" class="new-sign-in-button">Sign Up</button>
         </div>`
+    $('body').append('<div id="wave"/><div/>')
     $('.sign-up-page').append(signUpPage);
     $('.sign-up-page').on('click', '.new-sign-in-button', function () {
+        $('#wave').remove();
         handleNewUser();
     })
 }
@@ -207,7 +183,6 @@ function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
                 <div class="update-icon"></div>
                 Update
             </div>`;
-    console.log(thisSearchBox);
     thisSearchBox.animate({
         height: "320px"
     });
@@ -345,6 +320,30 @@ function updateDocument(session) {
         });
         $('.upload-box-bg').promise().done(() => {
             $('.upload-box-bg').remove();
+        });
+    });
+     $('form#upload-box-form').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData($(this)[0]);
+        thisurl = $(this).attr("action");
+        $.ajax({
+            url: `${thisurl}`,
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $('.upload-box-bg').animate({
+                    opacity: 0
+                });
+                $('.upload-box-bg').promise().done(() => {
+                    $('.upload-box-bg').remove();
+                });
+                renderPopUp('Transcription Updated', getRecentTranscripts, 'true')
+            },
+            error: function (jqXHR, textStatus, errorMessage) {
+                console.log(errorMessage); // Optional
+            }
         });
     });
 }
