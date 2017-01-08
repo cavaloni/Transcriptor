@@ -459,11 +459,16 @@ div[class^="search-results-box"] {
 }
 
 .warn-delete {
-    height: 200px;
+    height: 100px;
     width: 200px;
+    padding: auto;
 }
 
 #id-for-update {
+    display: none;
+}
+
+.hidden {
     display: none;
 }
 

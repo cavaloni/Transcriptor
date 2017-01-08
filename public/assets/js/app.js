@@ -144,12 +144,10 @@ function renderResults(results) {
         counter++
         let text = data.docText.slice(0, 259);
         text = text + '.....';
-        // let dater = data.date.split('T');
-        // let date = dater[0];
-        // dater = data.dateUploaded.split('T');
-        // let dateupload = dater[0];
-        let date = 2;
-        let dateupload = 2;
+        let dater = data.date.split('T');
+        let date = dater[0];
+        dater = data.dateUploaded.split('T');
+        let dateupload = dater[0];
         return `
         <div class="search-results-box${counter}" id="${counter}">
         <div class="info">
@@ -160,7 +158,7 @@ function renderResults(results) {
         <div class="info-line"><span id="first-word">Date Uploaded: </span>${dateupload}</div> 
         </div>
         <div class="snippet"><span id="first-word">Preview: </span>${text}<div class="admin${counter}">Admin</div></div>  
-        <div class="download-doc" id="${counter}"><div class="download-icon"></div>Download Document</div>
+        <div class="download-doc"><div class="download-icon" id="${counter}"></div>Download Document</div>
         words
         </div>
         </div>`
@@ -186,7 +184,9 @@ function renderResults(results) {
         });
     };
     $('.recent').on('click', '.download-icon', function () {  
+        console.log($(this));
         let nameOfSession =  $(this).attr("id");
+        console.log(nameOfSession);
         getDocument(nameOfSession);
 })
     $('.recent').on('click', '[class^=admin]', function () {
@@ -250,33 +250,39 @@ function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
 //
 //Popup message used to verify delete
 //
-function renderPopUp (message, callback) {
-    let uploadBox = `<div class="upload-box-bg">
+function renderPopUp (message, callback, noCancel) {
+    console.log(noCancel);
+    let popup = `<div class="help-box-wrapper">
         <div class="upload-box warn-delete">
-        ${message}
+        ${message}<br>
         <button class="ok">Ok</button>   
         <button class="cancel">Cancel</button>
         </div>
         </div>`
-    $('body').append(uploadBox);
-    $('.upload-box-bg').animate({
+    $('body').append(popup);
+    if (noCancel === 'true') {
+        $('.cancel').addClass('hidden');
+    }
+    $('.help-box-wrapper').animate({
         opacity: 1
     }, 50);
     $('body').on('click', '.ok', function () {
-        $('.upload-box-bg').animate({
+        $('.help-box-wrapper').animate({
             opacity: 0
+        }, 50);
+        $('.help-box-wrapper').promise().done(() => {
+            $('.help-box-wrapper').remove();
         });
-        $('.upload-box-bg').promise().done(() => {
-            $('.upload-box-bg').remove();
-        });
+        $('body').off('click', '.ok')
         callback();
     });
     $('body').on('click', 'cancel', function () { 
-        $('.upload-box-bg').animate({
+        $('.help-box-wrapper').animate({
             opacity: 0
-        });
-        $('.upload-box-bg').promise().done(() => {
-            $('.upload-box-bg').remove();
+        }, 50);
+        $('.help-box-wrapper').promise().done(() => {
+            $('.help-box-wrapper').remove();
+            $('body').off('click', 'cancel');
         });
      })
 
@@ -300,8 +306,9 @@ function deleteDocument(session) {
                 }, 500);
                 $(`.search-results-box${session}`).promise().done(function () {  
                     $(`.search-results-box${session}`).remove();
+                    getRecentTranscripts();
                 });
-                delete state.currentRenderedResults[session - 1];
+                
             })
             .fail(function (err) {
                 alert(`error ${err}`)
@@ -533,4 +540,31 @@ function renderUploadBox() {
             $('.upload-box-bg').remove();
         });
     });
+    $('form#upload-box-form').submit(function (e) {
+        console.log('thisworked');
+        e.preventDefault();
+        var formData = new FormData($(this)[0]);
+        thisurl = $(this).attr("action");
+        $.ajax({
+            url: `${thisurl}`,
+            type: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                $('.upload-box-bg').animate({
+                    opacity: 0
+                });
+                $('.upload-box-bg').promise().done(() => {
+                    $('.upload-box-bg').remove();
+                });
+                renderPopUp('Transcription Uploaded', getRecentTranscripts, 'true')
+            },
+            error: function (jqXHR, textStatus, errorMessage) {
+                console.log(errorMessage); // Optional
+            }
+        });
+    });
 }
+
+//Trying to get it to submit with reloading the page to the JSON resp

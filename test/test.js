@@ -332,8 +332,8 @@ let cookie;
         });
     });
 
-    describe('PUT resource for transcriptions', function () {
-        it('Should update transcriptions on PUT', function () {
+    describe('POST resource for updating transcriptions', function () {
+        it('Should update transcriptions on POST', function () {
             const update = {
                 name: faker.name,
                 sessionNumber: faker.random,
@@ -345,7 +345,7 @@ let cookie;
                     update = trans.id
 
                     return tester(app)
-                        .put(`/transcriptions/${trans.id}`)
+                        .post(`/transcriptions/${trans.id}`)
                         .send(update)
                 })
                 .then(function (res) {
@@ -358,6 +358,35 @@ let cookie;
                     trans.name.should.equal(update.name);
                     trans.sessionNumber.should.equal(update.sessionNumber);
                     trans.docText.should.equal(update.docText);
+                });
+        });
+    });
+
+ describe('GET resource for transcription download', function () {
+        it('Should download a document on GET', function () {
+            newTranscription = {
+                projectName: "wierd",
+                name: 'John Doe',
+                date: '12/12/12',
+                sessionNumber: '2',
+                uploadedBy: 'henry'
+            }
+            return tester(app)
+                .post('/transcriptions/upload/henry')
+                .set('cookie', cookie)
+                .field('projectName', 'wierd')
+                .field('name', 'John Doe')
+                .field('date', '12/12/12')
+                .field('sessionNumber', 2)
+                .attach('file', './uploads/8859-1.txt')
+                .then((res1) => {
+                    console.log(res1.body);
+                    return tester(app)
+                    .get(`/transcriptions/download/${res1.body.name}`)
+                    .send({project: `${res1.body.project}`})
+                    .then((res) => {
+                        res.should.have.status(200);
+                    })
                 });
         });
     });

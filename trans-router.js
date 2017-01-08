@@ -113,6 +113,7 @@ router.get('/:userid', isAuthenticated,
 
 router.get('/download/:name', isAuthenticated, 
     (req, res) => {
+        console.log('999999999999999999999999999999999999999999999999999');
         console.log(req.user.project);
         console.log(req.params.name);
         Transcriptions
