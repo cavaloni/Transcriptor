@@ -160,7 +160,7 @@ router.post('/upload/:id', isAuthenticated, upload.any(), (req, res) => {
     ///text extractor
     let docText;
     new Promise((resolve, reject) => {
-        textract.fromFileWithPath(__dirname + `\\uploads\\${fileName}`, function (err, text) {
+        textract.fromFileWithPath(__dirname + `/uploads/${fileName}`, function (err, text) {
             console.log(err);
             docText = text;
             resolve();
@@ -213,7 +213,7 @@ router.post('/:id', isAuthenticated, upload.any(),
             ///text extractor
             let thisdocText;
             new Promise((resolve, reject) => {
-                textract.fromFileWithPath(__dirname + `\\uploads\\${fileName}`, function (err, text) {
+                textract.fromFileWithPath(__dirname + `/uploads/${fileName}`, function (err, text) {
                     console.log(err);
                     thisdocText = text;
                     resolve();
