@@ -12,6 +12,7 @@ button:focus {
     height: 100%;
     position: fixed;
     background: linear-gradient(to right, #F6F7F2, #E0E4CC);
+    overflow: scroll;
 }
 
 .hidden {

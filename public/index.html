@@ -8,69 +8,60 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.1.1/normalize.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/main.css">
     <link href="https://fonts.googleapis.com/css?family=Julius+Sans+One|News+Cycle|Comfortaa" rel="stylesheet">
-    
     <title>Transcriptor. A tool for collaborative transcription database entry.</title>
 </head>
 
-
-
-
 <body>
     <div class="body-wrapper">
-    <div class="sign-up-page">
-        <div class="welcome-bar">Transcriptor</div>
-        <div class="signin-box">
-            <form action="#" class="sign-in-form">
-                <label for="email">Username</label>
-                <input type="text" id="email" placeholder="username">
-                <label for="password">Password</label>
-                <input type="password" id="password" placeholder="password">
-                <button type="submit" class="sign-in-button">Sign In</button>
+        <div class="sign-up-page">
+            <div class="welcome-bar">Transcriptor</div>
+            <div class="signin-box">
+                <form action="#" class="sign-in-form">
+                    <label for="email">Username</label>
+                    <input type="text" id="email" placeholder="username">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="password">
+                    <button type="submit" class="sign-in-button">Sign In</button>
                 </form>
-                
-        <div class="sign-up">Sign Up Here</div>        
+                <div class="sign-up">Sign Up Here</div>
+            </div>
         </div>
+        <div class="app-wrapper hidden">
+            <div class="top-bar">Transcriptor
+                <div class="logged-in"></div>
+            </div>
+            <div class="nav-bar">
+                <ul>
+                    <li id='search'>Search
+                        <div class="search-icon"></div>
+                    </li>
+                    <li id='upload'>Upload
+                        <div class="upload-icon"></div>
+                    </li>
+                    <li id='my-uploads'>My Uploads
+                        <div class="myuploads-icon"></div>
+                    </li>
+                    <li id='recent-uploads'>Recent Uploads
+                        <div class="recentuploads-icon"></div>
+                    </li>
+                    <li id='help'>Help
+                        <div class="help-icon"></div>
+                    </li>
+                </ul>
+            </div>
+            <div class="search-bar hidden">
+                <div class="trans-search">Search Transcriptions</div>
+                <form action="#" class="search-from">
+                    <input type="text" id="searchterm">
+                    <button type="submit" class="js-first-search-button">Search</button>
+                </form>
+            </div>
+            <div class="recent">
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="assets/js/app.js"></script>
     </div>
-
-<div class="app-wrapper hidden">
-        <div class="top-bar">Transcriptor
-            <div class="logged-in"></div>
-        </div>
-        <div class="nav-bar">      
-        <ul>
-            <li id='search'>Search
-                <div class="search-icon"></div>
-            </li>
-            <li id='upload'>Upload
-                <div class="upload-icon"></div>
-            </li>
-            <li id='my-uploads'>My Uploads
-                <div class="myuploads-icon"></div>
-            </li>
-            <li id='recent-uploads'>Recent Uploads
-                <div class="recentuploads-icon"></div>
-            </li>
-            <li id='help'>Help
-                <div class="help-icon"></div>
-            </li>
-        </ul>
-        </div>
-        <div class="search-bar hidden"> 
-            <div class="trans-search">Search Transcriptions</div>
-            <form action="#" class="search-from">
-                <input type="text" id="searchterm">
-                <button type="submit" class="js-first-search-button">Search</button>
-            </form>
-        </div>
-        <div class="recent">
-            
-        </div>
-    </div>
-
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="assets/js/app.js"></script>
-</div>
 </body>
 
 </html>

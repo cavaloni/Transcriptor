@@ -52,7 +52,7 @@ function loginUser(username, password) {
                 'Authorization': 'Basic ' + btoa(username + ":" + password)
             },
             "data": `{\"username\": \"${username}\",\n\t\"password\": \"${password}\"\n}`
-             })
+        })
         .done(function (msg) {
             state.project = msg.project;
             renderDash();
@@ -179,16 +179,16 @@ function renderMyUploads() {
 //Function to render results from all types of queries:
 //Recent from project, recent from user, and search results
 
-function renderResults(results) {  
+function renderResults(results) {
     let counter = 0;
     let recentView = results.map(function (data) {
-        counter++       //counter to add to ID's of search-results to identify what 'this' refers to
-        let text = data.docText.slice(0, 259);      //
-        text = text + '.....';                      //
-        let dater = data.date.split('T');           //  Format the date to a more readable version
-        let date = dater[0];                        //
-        dater = data.dateUploaded.split('T');       //
-        let dateupload = dater[0];                  //
+        counter++                               //counter to add to ID's of search-results to identify what 'this' refers to
+        let text = data.docText.slice(0, 259); //
+        text = text + '.....';                 //
+        let dater = data.date.split('T');      //  Format the date to a more readable version
+        let date = dater[0];                    //
+        dater = data.dateUploaded.split('T');   //
+        let dateupload = dater[0];              //
         return `
         <div class="search-results-box${counter}" id="${counter}">
         <div class="info">
@@ -204,13 +204,13 @@ function renderResults(results) {
         </div>
         </div>`
     });
-    
+
     let boxesToRender = recentView.length;
     counter = 0;
     renderResultsBoxes();
 
-    function renderResultsBoxes() {          //recursive function so that boxes render individually
-        counter++                           //for a better looking display
+    function renderResultsBoxes() {      //recursive function so that boxes render individually
+        counter++                       //for a better looking display
         if (counter > boxesToRender) {
             return
         }
@@ -220,16 +220,16 @@ function renderResults(results) {
             height: "140px"
         }, 400);
         $(`.search-results-box${counter}`).promise().done(function () {
-            renderResultsBoxes();            //Recursive call once animation is done
+            renderResultsBoxes();       //Recursive call once animation is done
         });
     };
-    $('.recent').on('click', '.download-icon', function () {  //listen for download click
-        let nameOfSession =  $(this).attr("id");
+    $('.recent').on('click', '.download-icon', function () { //listen for download click
+        let nameOfSession = $(this).attr("id");
         getDocument(nameOfSession);
-})
-    $('.recent').on('click', '[class^=admin]', function () {        //admin button listener
+    })
+    $('.recent').on('click', '[class^=admin]', function () { //admin button listener
         let thisSearchBox = $(this).parents('[class^=search-results-box]');
-        let thisSearchBoxId= $(this).parents('[class^=search-results-box]').attr("id");
+        let thisSearchBoxId = $(this).parents('[class^=search-results-box]').attr("id");
         handleAdminButtons(thisSearchBox, thisSearchBoxId);
     });
 }
