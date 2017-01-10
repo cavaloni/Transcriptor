@@ -47,7 +47,7 @@ function loginUser(username, password) {
     state.loggedIn = username;
     $.ajax({
             type: "POST",
-            url: "http://localhost:8080/users/login",
+            url: "/users/login",
             headers: {
                 'Authorization': 'Basic ' + btoa(username + ":" + password)
             },
@@ -84,7 +84,7 @@ function renderSignUpPage() {
                 </form>
                 <button type="submit" class="new-sign-in-button">Sign Up</button>
         </div>`
-    $('body').append('<div id="wave"/><div/>')
+    $('.body-wrapper').append('<div id="wave"/><div/>')
     $('.sign-up-page').append(signUpPage);
     $('.sign-up-page').on('click', '.new-sign-in-button', function () {
         $('#wave').remove();
@@ -100,7 +100,7 @@ function handleNewUser() {
             type: "POST",
             "processData": false,
             "data": `{\"username\": \"${uName}\",\n\t\"password\": \"${pWord}\",\n\t\"project\": \"${pName}\"\n}`,
-            url: 'http://localhost:8080/users',
+            url: '/users',
             "headers": {
                 "content-type": "application/json",
                 "cache-control": "no-cache",
@@ -111,7 +111,7 @@ function handleNewUser() {
             loginUser(uName, pWord);
         })
         .fail(function (err) {
-            alert(`error ${err}`)
+            console.log(err);
         });
 }
 
@@ -157,7 +157,7 @@ function renderMyUploads() {
     user = state.loggedIn;
     $.ajax({
             type: "GET",
-            url: `http://localhost:8080/transcriptions/${user}`,
+            url: `/transcriptions/${user}`,
             xhrFields: {
                 withCredentials: true
             }
@@ -269,7 +269,8 @@ function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
                 height: "140px"
             });
             resolve();
-        }).then(() => {
+        })
+        .then(() => {
             $('.recent').off('click', `.admin${thisSearchBoxId}`);      //turn off binding and re-listen only
             $('.recent').on('click', '[class^=admin]', function () {    //when animation is complete
                 let thisSearchBox = $(this).parents('[class^=search-results-box]');
@@ -290,7 +291,7 @@ function deleteDocument(session) {
     function callback() {
         $.ajax({
                 type: "DELETE",
-                url: `http://localhost:8080/transcriptions/${thisSessionID}`,
+                url: `/transcriptions/${thisSessionID}`,
             })
             .done(function (msg) {
                 $(`.search-results-box${session}`).animate({
@@ -360,7 +361,7 @@ function updateDocument(session) {
         <form enctype="multipart/form-data" action="/transcriptions/${thisSessionID}" method="post" id="submission-box-form">
         <input id="talkname" type="text" name="name" placeholder="New Name (if any)">
         <br>
-        <input id="date" type="text" name="date" placeholder="New Date (if any)">
+        <input id="date" type="date" name="date" placeholder="New Date (if any)">
         <br>
         <input id="sessionnumber" type="text" name="sessionNumber" placeholder="New Session Number (if any)">
         <br>
@@ -503,7 +504,7 @@ function renderHelpBox() {
 function getSearchResults (searchTerm) {  
     $.ajax({
         type: "POST",
-        url: "http://localhost:8080/transcriptions/search",
+        url: "/transcriptions/search",
         dataType: 'json',
         data: `{"search": "${searchTerm}"}`,
         xhrFields: {
@@ -525,7 +526,7 @@ function getSearchResults (searchTerm) {
 function getRecentTranscripts () {
     $.ajax({
         type: "GET",
-        url: "http://localhost:8080/transcriptions",
+        url: "/transcriptions",
         xhrFields: {
       withCredentials: true
         }
@@ -546,7 +547,7 @@ function getDocument (session) {
     let thisProject = state.project;
     $.ajax({
             type: "GET",
-            url: `http://localhost:8080/transcriptions/download/${thisSession}`,
+            url: `/transcriptions/download/${thisSession}`,
             data: `{\"sessionname\": \"${thisSession}\",\n\t\"projectName\": \"${thisProject}\"\n}`,
             xhrFields: {
                 withCredentials: true
@@ -558,7 +559,7 @@ function getDocument (session) {
             "processData": false,
         })
         .done(function (results) {
-            window.location = `http://localhost:8080/transcriptions/download/${thisSession}`;
+            window.location = `/transcriptions/download/${thisSession}`;
         })
         .fail(function (err) {
             alert('cannot get file: ' + err);
