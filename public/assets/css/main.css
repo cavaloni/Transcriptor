@@ -1,9 +1,6 @@
 /*Global CSS*/
 
-input:focus,
-select:focus,
-textarea:focus,
-button:focus {
+#searchterm:focus {
     outline: none;
 }
 
@@ -17,6 +14,154 @@ button:focus {
 
 .hidden {
     display: none;
+}
+
+/*inital sign-in and sign-up boxes*/
+
+.signin-box button:hover,
+.form button:active,
+.form button:focus {
+    background: #43A047;
+}
+
+.signin-box,
+.new-signup-box {
+    background: #FFFFFF;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+    position: absolute;
+    top: 34%;
+    left: calc(50% - 150px);
+    height: 240px;
+    width: 300px;
+    padding: 20px;
+    border-radius: 3px;
+}
+
+.signin-box input {
+    font-family: "Roboto", sans-serif;
+    outline: 0;
+    background: #f2f2f2;
+    width: 100%;
+    border: 0;
+    margin: 0 0 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.signin-box button {
+    font-family: "Roboto", sans-serif;
+    text-transform: uppercase;
+    outline: 0;
+    background: #4CAF50;
+    width: 100%;
+    border: 0;
+    padding: 15px;
+    color: #FFFFFF;
+    font-size: 14px;
+    -webkit-transition: all 0.3 ease;
+    transition: all 0.3 ease;
+    cursor: pointer;
+}
+
+.new-signup-box input {
+    font-family: "Roboto", sans-serif;
+    outline: 0;
+    background: #f2f2f2;
+    width: 100%;
+    border: 0;
+    margin: 0 0 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+
+.new-signup-box button {
+    font-family: "Roboto", sans-serif;
+    text-transform: uppercase;
+    outline: 0;
+    background: #4CAF50;
+    width: 100%;
+    border: 0;
+    padding: 15px;
+    color: #FFFFFF;
+    font-size: 14px;
+    -webkit-transition: all 0.3 ease;
+    transition: all 0.3 ease;
+    cursor: pointer;
+}
+
+.sign-up-page {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 75%;
+    text-align: center;
+}
+
+.sign-in-button,
+.new-sign-in-button {
+    margin-top: 30px;
+}
+
+.sign-up {
+    color: blue;
+    position: relative;
+    top: 40px;
+    text-align: center;
+}
+
+.sign-up:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.example-popup {
+    font-family: 'Comfortaa', cursive;
+    background-color: #eff4b0;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+/*Sign up page background*/
+
+#wave {
+    position: absolute;
+    background: #e0efe3;
+    width: 100%;
+    height: 100px;
+    margin-top: 200px;
+    z-index: -1;
+}
+
+#wave:before {
+    content: "";
+    display: block;
+    position: absolute;
+    border-radius: 100% 50%;
+    width: 340px;
+    height: 180px;
+    background-color: #e0ece0;
+    right: 20%;
+    top: 40px;
+}
+
+#wave:after {
+    content: "";
+    display: block;
+    position: absolute;
+    border-radius: 100% 50%;
+    width: 300px;
+    height: 70px;
+    background-color: #e0efe3;
+    left: 0;
+    top: 27px;
+}
+
+.incorrect {
+    margin-top: 80px;
 }
 
 /*Initial page background*/
@@ -73,6 +218,17 @@ button:focus {
     margin-left: 5px;
     padding-left: 5px;
     padding-right: 5px;
+}
+
+.nav-bar>ul>li:hover {
+  animation: colorchange .4s ease-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes colorchange {
+  100% {
+    background-color: #FF4136;
+  }
 }
 
 #search {
@@ -254,142 +410,7 @@ form {
     display: none;
 }
 
-/*inital sign-in and sign-up boxes*/
 
-.signin-box button:hover,
-.form button:active,
-.form button:focus {
-    background: #43A047;
-}
-
-.signin-box,
-.new-signup-box {
-    background: #FFFFFF;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-    position: absolute;
-    top: 34%;
-    left: calc(50% - 150px);
-    height: 240px;
-    width: 300px;
-    padding: 20px;
-    border-radius: 3px;
-}
-
-.signin-box input {
-    font-family: "Roboto", sans-serif;
-    outline: 0;
-    background: #f2f2f2;
-    width: 100%;
-    border: 0;
-    margin: 0 0 15px;
-    padding: 15px;
-    box-sizing: border-box;
-    font-size: 14px;
-}
-
-.signin-box button {
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background: #4CAF50;
-    width: 100%;
-    border: 0;
-    padding: 15px;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
-}
-
-.new-signup-box input {
-    font-family: "Roboto", sans-serif;
-    outline: 0;
-    background: #f2f2f2;
-    width: 100%;
-    border: 0;
-    margin: 0 0 15px;
-    padding: 15px;
-    box-sizing: border-box;
-    font-size: 14px;
-}
-
-
-.new-signup-box button {
-    font-family: "Roboto", sans-serif;
-    text-transform: uppercase;
-    outline: 0;
-    background: #4CAF50;
-    width: 100%;
-    border: 0;
-    padding: 15px;
-    color: #FFFFFF;
-    font-size: 14px;
-    -webkit-transition: all 0.3 ease;
-    transition: all 0.3 ease;
-    cursor: pointer;
-}
-
-.sign-up-page {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 75%;
-    text-align: center;
-}
-
-.sign-in-button,
-.new-sign-in-button {
-    margin-top: 30px;
-}
-
-.sign-up {
-    color: blue;
-    position: relative;
-    top: 40px;
-    text-align: center;
-}
-
-.sign-up:hover {
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-/*Sign up page background*/
-
-#wave {
-    position: absolute;
-    background: #e0efe3;
-    width: 100%;
-    height: 100px;
-    margin-top: 200px;
-    z-index: -1;
-}
-
-#wave:before {
-    content: "";
-    display: block;
-    position: absolute;
-    border-radius: 100% 50%;
-    width: 340px;
-    height: 180px;
-    background-color: #e0ece0;
-    right: 20%;
-    top: 40px;
-}
-
-#wave:after {
-    content: "";
-    display: block;
-    position: absolute;
-    border-radius: 100% 50%;
-    width: 300px;
-    height: 70px;
-    background-color: #e0efe3;
-    left: 0;
-    top: 27px;
-}
 
 /*Who is logged in*/
 

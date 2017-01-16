@@ -3,7 +3,8 @@
 const state = {
     currentRenderedResults : [],
     loggedIn: '',
-    project: ''
+    project: '',
+    invalidLogin: false
 };
 
 //Initial Event Listeners
@@ -54,6 +55,7 @@ function loginUser(username, password) {
             "data": `{\"username\": \"${username}\",\n\t\"password\": \"${password}\"\n}`
         })
         .done(function (msg) {
+            state.invalidLogin = false;
             state.project = msg.project;
             renderDash();
         })
@@ -63,9 +65,12 @@ function loginUser(username, password) {
 }
 
 function renderFailedLogin () {  
-    let incorrectAlert = `<div class="incorrect">
-    Incorrect Username/Password</div>`
-    $('.signin-box').append(incorrectAlert);
+    if (!state.invalidLogin) {
+        let incorrectAlert = `<div class="incorrect">
+        Incorrect Username/Password</div>`
+        $('.signin-box').append(incorrectAlert);
+        state.invalidLogin = true
+    }
 }
 
 //Function to render sign up page and listen for actions
@@ -89,7 +94,14 @@ function renderSignUpPage() {
     $('.sign-up-page').on('click', '.new-sign-in-button', function () {
         $('#wave').remove();
         handleNewUser();
-    })
+    });
+    $('#project').focus(() => {
+        $('.new-signup-box').append(
+            `<div class="example-popup">Use project "example" to load example documents</div>`
+        )
+        $('#project').off('focus');
+    }
+    )
 }
 
 function handleNewUser() {
@@ -200,7 +212,6 @@ function renderResults(results) {
         </div>
         <div class="snippet"><span id="first-word">Preview: </span>${text}<div class="admin${counter}">Admin</div></div>  
         <div class="download-doc"><div class="download-icon" id="${counter}"></div>Download Document</div>
-        words
         </div>
         </div>`
     });
@@ -477,8 +488,9 @@ function renderUploadBox() {
 function renderHelpBox() {
     let helpBox = `<div class="help-box-wrapper">
     <div class="help-box">Transcriptor is a tool for those to store and search transcriptions.
-    Transcriptor accepts word documents as file format.
-    It can be used, for example, in qualitative research in the humanistic sciences when a team is transcribing interviews.
+    Transcriptor accepts doc, docx, and txt documents as file format.
+    It can be used, for example, in qualitative research when a team is transcribing interviews,
+    and a simple, easy to use interface is needed to search, store, and download.
     </div>
     </div>`;
     $('body').append(helpBox);
@@ -519,7 +531,8 @@ function getSearchResults (searchTerm) {
         renderSearchResults(results);
     })
     .fail(function (err) {  
-        alert('yo shit broke:' + err);
+        alert('Server connection failed');
+        console.log(err);
     });
 }
 
@@ -538,7 +551,8 @@ function getRecentTranscripts () {
         renderRecent(results);
     })
     .fail(function (err) {  
-        alert('yo shit broke:' + err);
+        alert('Server problem');
+        console.log(err);
     });
 }
 
