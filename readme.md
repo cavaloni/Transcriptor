@@ -19,6 +19,7 @@ Wireframes were made prior to any code being written. Some minimal user feedback
 You can access the live site at https://intense-ravine-62468.herokuapp.com/
 
 ##Technical
+- Photoshop used to create background
 - Transcriptor uses javascript on the front-end and on the back-end with NodeJS
 - JQuery is used on the front end for style and transitions and to make ajax requests
 - ExpressJS is used on the back-end with Node to simplify the server writing process
@@ -33,5 +34,5 @@ You can access the live site at https://intense-ravine-62468.herokuapp.com/
 - MochaJS to test the server
 - Chai, Chai-http, and supertest-as-promised to test the individual endpoints with authentication
 - MLab to host the database
-- TravisCI to continuously test and deploy to
+- TravisCI to continuously test and deploy
 - Heroku to host the application
