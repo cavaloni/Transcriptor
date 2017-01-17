@@ -16,6 +16,11 @@
     display: none;
 }
 
+.reference {
+    height: 180px;
+    display: none;
+}
+
 /*inital sign-in and sign-up boxes*/
 
 .signin-box button:hover,
@@ -299,6 +304,7 @@
     border-radius: 10px;
     font-size: 20px;
     background-color: #FF6766;
+    padding: 10px;
 }
 
 .js-first-search-button:hover {
@@ -307,6 +313,7 @@
 }
 
 #searchterm {
+    padding: 10px;
     font-family: 'News Cycle', sans-serif;
     border: 2px solid lightgray;
     border-radius: 20px;
@@ -544,7 +551,7 @@ div[class^="search-results-box"] {
 
 
 .warn-delete {
-    height: 100px;
+    height: 120px;
     width: 200px;
     padding: auto;
 }

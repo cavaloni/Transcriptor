@@ -4,8 +4,17 @@ const state = {
     currentRenderedResults : [],
     loggedIn: '',
     project: '',
-    invalidLogin: false
+    invalidLogin: false,
+    mediaQueryBoxHeight: checkHeight
 };
+
+// Media query function check
+function checkHeight() {  
+    const thisHeight = $('.reference').css('height');
+    const processThisHeight = thisHeight.replace(/[^0-9]+/g, '');
+    const returnNumber = Number(processThisHeight);
+    return returnNumber;
+}
 
 //Initial Event Listeners
 $('.sign-in-button').click(function (e) {
@@ -22,23 +31,23 @@ $('#search').on('click', function (e) {
 
 $('#upload').on('click', function () {
     renderUploadBox();
-})
+});
 
 $('#my-uploads').on('click', function () {
     renderMyUploads();
-})
+});
 
 $('#recent-uploads').on('click', function () {
     getRecentTranscripts();
-})
+});
 
 $('#help').on('click', function () {
     renderHelpBox();
-})
+});
 
 $('.sign-up').on('click', function () {
     renderSignUpPage();
-})
+});
 
 
 
@@ -47,12 +56,12 @@ $('.sign-up').on('click', function () {
 function loginUser(username, password) {
     state.loggedIn = username;
     $.ajax({
-            type: "POST",
-            url: "/users/login",
+            type: 'POST',
+            url: '/users/login',
             headers: {
                 'Authorization': 'Basic ' + btoa(username + ":" + password)
             },
-            "data": `{\"username\": \"${username}\",\n\t\"password\": \"${password}\"\n}`
+            'data': `{\"username\": \"${username}\",\n\t\"password\": \"${password}\"\n}`
         })
         .done(function (msg) {
             state.invalidLogin = false;
@@ -61,7 +70,7 @@ function loginUser(username, password) {
         })
         .fail(function (err) {
             renderFailedLogin();
-        })
+        });
 }
 
 function renderFailedLogin () {  
@@ -80,14 +89,15 @@ function renderSignUpPage() {
     $('.sign-up-page').empty();
     let signUpPage = `<div class="new-signup-box">
             <form action="#" class="sign-up-form">
-                <label for="username">Username</label>
-                <input type="text" id="new-username">
-                 <label for="password">Password</label>
-                <input type="text" id="new-password">
+                <label for="new-username">Username</label>
+                <input type="text" id="new-username" required>
+                 <label for="new-password">Password</label>
+                <input type="password" id="new-password" required>
                  <label for="project">Project</label>
-                <input type="text" id="project">
-                </form>
+                <input type="text" id="project" required>
                 <button type="submit" class="new-sign-in-button">Sign Up</button>
+                </form>
+                
         </div>`
     $('.body-wrapper').append('<div id="wave"/><div/>')
     $('.sign-up-page').append(signUpPage);
@@ -98,10 +108,10 @@ function renderSignUpPage() {
     $('#project').focus(() => {
         $('.new-signup-box').append(
             `<div class="example-popup">Use project "example" to load example documents</div>`
-        )
+        );
         $('#project').off('focus');
     }
-    )
+    );
 }
 
 function handleNewUser() {
@@ -109,11 +119,11 @@ function handleNewUser() {
     let uName = $('#new-username').val();
     let pName = $('#project').val();
     $.ajax({
-            type: "POST",
-            "processData": false,
-            "data": `{\"username\": \"${uName}\",\n\t\"password\": \"${pWord}\",\n\t\"project\": \"${pName}\"\n}`,
+            type: 'POST',
+            'processData': false,
+            'data': `{\"username\": \"${uName}\",\n\t\"password\": \"${pWord}\",\n\t\"project\": \"${pName}\"\n}`,
             url: '/users',
-            "headers": {
+            'headers': {
                 "content-type": "application/json",
                 "cache-control": "no-cache",
             },
@@ -123,7 +133,8 @@ function handleNewUser() {
             loginUser(uName, pWord);
         })
         .fail(function (err) {
-            console.log(err);
+            let errMessage = JSON.parse(err.responseText);
+            renderPopUp(`${errMessage.message}`, null, 'true');
         });
 }
 
@@ -146,7 +157,7 @@ function displaySearchPanel() {
         let searchTerm = $('#searchterm').val();
         e.preventDefault();
         getSearchResults(searchTerm);
-    })
+    });
 }
 
 function renderSearchResults(results) {  
@@ -168,7 +179,7 @@ function renderRecent(results) {
 function renderMyUploads() {
     user = state.loggedIn;
     $.ajax({
-            type: "GET",
+            type: 'GET',
             url: `/transcriptions/${user}`,
             xhrFields: {
                 withCredentials: true
@@ -182,7 +193,7 @@ function renderMyUploads() {
             renderResults(results1)
         })
         .fail(function (err) {
-            alert('cannot get results for user:' + err);
+            renderPopUp('cannot get results for user:' + err, 'true');
         });
 }
 
@@ -225,22 +236,29 @@ function renderResults(results) {
         if (counter > boxesToRender) {
             return
         }
+        // for responsive media query on Search Boxes 
+        // animation extension for admin buttons below
+
+        let ht = state.mediaQueryBoxHeight();
+        let htt = ht.toString();
+        httt = htt + 'px'
+
         $('.recent').append(recentView[counter - 1]);
         $(`.search-results-box${counter}`).animate({
             opacity: 1,
-            height: "140px"
+            height: httt
         }, 400);
         $(`.search-results-box${counter}`).promise().done(function () {
             renderResultsBoxes();       //Recursive call once animation is done
         });
     };
     $('.recent').on('click', '.download-icon', function () { //listen for download click
-        let nameOfSession = $(this).attr("id");
+        let nameOfSession = $(this).attr('id');
         getDocument(nameOfSession);
-    })
+    });
     $('.recent').on('click', '[class^=admin]', function () { //admin button listener
         let thisSearchBox = $(this).parents('[class^=search-results-box]');
-        let thisSearchBoxId = $(this).parents('[class^=search-results-box]').attr("id");
+        let thisSearchBoxId = $(this).parents('[class^=search-results-box]').attr('id');
         handleAdminButtons(thisSearchBox, thisSearchBoxId);
     });
 }
@@ -256,8 +274,14 @@ function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
                 <div class="update-icon"></div>
                 Update
             </div>`;
+    
+    // Process current CSS media query height of boxes
+    let ht = state.mediaQueryBoxHeight() + 180;
+    let htt = ht.toString();
+    httt = htt + 'px'
+
     thisSearchBox.animate({
-        height: "320px"
+        height: httt
     });
     thisSearchBox.promise().done(function () {
         thisSearchBox.append(adminButtons).animate({
@@ -265,11 +289,11 @@ function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
         });
     });
     $('.recent').on('click', '.delete', function () {
-        let nameOfSession = $(this).parents('[class^=search-results-box]').attr("id");
+        let nameOfSession = $(this).parents('[class^=search-results-box]').attr('id');
         deleteDocument(nameOfSession);
     });
     $('.recent').on('click', '.update', function () {
-        let nameOfSession = $(this).parents('[class^=search-results-box]').attr("id");
+        let nameOfSession = $(this).parents('[class^=search-results-box]').attr('id');
         updateDocument(nameOfSession);
     });
     $('.recent').on('click', `.admin${thisSearchBoxId}`, function () {
@@ -277,7 +301,7 @@ function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
             thisSearchBox.find('.delete').remove();
             thisSearchBox.find('.update').remove();
             thisSearchBox.animate({
-                height: "140px"
+                height: state.mediaQueryBoxHeight()
             });
             resolve();
         })
@@ -285,7 +309,7 @@ function handleAdminButtons(thisSearchBox, thisSearchBoxId) {
             $('.recent').off('click', `.admin${thisSearchBoxId}`);      //turn off binding and re-listen only
             $('.recent').on('click', '[class^=admin]', function () {    //when animation is complete
                 let thisSearchBox = $(this).parents('[class^=search-results-box]');
-                let thisSearchBoxId = $(this).parents('[class^=search-results-box]').attr("id");
+                let thisSearchBoxId = $(this).parents('[class^=search-results-box]').attr('id');
                 handleAdminButtons(thisSearchBox, thisSearchBoxId);
             });
         });
@@ -301,13 +325,13 @@ function deleteDocument(session) {
 
     function callback() {
         $.ajax({
-                type: "DELETE",
+                type: 'DELETE',
                 url: `/transcriptions/${thisSessionID}`,
             })
             .done(function (msg) {
                 $(`.search-results-box${session}`).animate({
                     opacity: 0,
-                    height: "0px"
+                    height: '0px'
                 }, 500);
                 $(`.search-results-box${session}`).promise().done(function () {  
                     $(`.search-results-box${session}`).remove();
@@ -316,7 +340,7 @@ function deleteDocument(session) {
                 
             })
             .fail(function (err) {
-                alert(`error ${err}`)
+                renderPopUp(`Something went wrong: ${errorMessage}`, null, 'true');
             });
     }
 }
@@ -358,7 +382,7 @@ function renderPopUp (message, callback, noCancel) {
             $('.help-box-wrapper').remove();
             $('body').off('click', 'cancel');
         });
-     })
+     });
 
 }
 
@@ -399,10 +423,10 @@ function updateDocument(session) {
      $('form#submission-box-form').submit(function (e) {
         e.preventDefault();
         var formData = new FormData($(this)[0]);
-        thisurl = $(this).attr("action");
+        thisurl = $(this).attr('action');
         $.ajax({
             url: `${thisurl}`,
-            type: "POST",
+            type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
@@ -457,10 +481,10 @@ function renderUploadBox() {
     $('form#submission-box-form').submit(function (e) {
         e.preventDefault();
         var formData = new FormData($(this)[0]);        //get form data from this form
-        thisurl = $(this).attr("action");               //to use in ajax request
+        thisurl = $(this).attr('action');               //to use in ajax request
         $.ajax({
             url: `${thisurl}`,
-            type: "POST",
+            type: 'POST',
             data: formData,
             processData: false,
             contentType: false,
@@ -515,14 +539,14 @@ function renderHelpBox() {
 
 function getSearchResults (searchTerm) {  
     $.ajax({
-        type: "POST",
-        url: "/transcriptions/search",
+        type: 'POST',
+        url: '/transcriptions/search',
         dataType: 'json',
         data: `{"search": "${searchTerm}"}`,
         xhrFields: {
         withCredentials: true
         },
-        "headers": {
+        'headers': {
                 "content-type": "application/json",
                 "cache-control": "no-cache",
             },
@@ -538,8 +562,8 @@ function getSearchResults (searchTerm) {
 
 function getRecentTranscripts () {
     $.ajax({
-        type: "GET",
-        url: "/transcriptions",
+        type: 'GET',
+        url: '/transcriptions',
         xhrFields: {
       withCredentials: true
         }
@@ -560,17 +584,17 @@ function getDocument (session) {
     let thisSession = state.currentRenderedResults[session - 1].name;
     let thisProject = state.project;
     $.ajax({
-            type: "GET",
+            type: 'GET',
             url: `/transcriptions/download/${thisSession}`,
             data: `{\"sessionname\": \"${thisSession}\",\n\t\"projectName\": \"${thisProject}\"\n}`,
             xhrFields: {
                 withCredentials: true
             },
-            "headers": {
+            'headers': {
                 "content-type": "application/json",
                 "cache-control": "no-cache",
             },
-            "processData": false,
+            'processData': false,
         })
         .done(function (results) {
             window.location = `/transcriptions/download/${thisSession}`;

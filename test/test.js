@@ -1,17 +1,16 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const mongoose = require('mongoose');
-const {app, runServer, closeServer} = require('../server');
 const should = chai.should();
+const expect = chai.expect;
+const mongoose = require('mongoose');
 const faker = require('faker');
+const bcrypt = require('bcryptjs');
+const tester = require('supertest-as-promised').agent;
+const superagent = require('superagent');
+const agent = superagent.agent();
+const {app, runServer, closeServer} = require('../server');
 const {Transcriptions} = require('../models');
 const {User} = require('../users/index.js');
-const bcrypt = require('bcryptjs');
-const expect = chai.expect;
-const tester = require("supertest-as-promised").agent;
-var superagent = require('superagent');
-var agent = superagent.agent();
-
 
 chai.use(chaiHttp);
 
@@ -41,7 +40,7 @@ function seedUser() {
     let user ={
             username: 'henry',
             password: hash,
-            project: "wierd"
+            project: 'wierd'
         };      
     return User.create(user);
 }
@@ -59,11 +58,11 @@ function generateTranscriptionData () {
             path: generateName(),
             originalname: generateName()
         }
-}
+    }
 }
 
 function generateControlTranscriptionData() {  
-       return {
+    return {
         projectName: 'wierd',
         name: 'bear',
         docText: 'some great text that contains normal words that can be searched',
@@ -103,8 +102,8 @@ function tearDownDB() {
 
 describe('Transcriptor API resource', function () {
 
-let cookie;             //need a cookie to be passed between each test so that
-                        //Authentication passes on protected endpoints
+    let cookie; //need a cookie to be passed between each test so that
+    //Authentication passes on protected endpoints
     before(function () {
         return runServer();
     });
@@ -117,44 +116,48 @@ let cookie;             //need a cookie to be passed between each test so that
         return seedTransData();
     });
 
-    after(function () {
-        return closeServer();
-    });
-
     afterEach(function () {
         return tearDownDB();
     });
 
-    beforeEach(function() {
-      return tester(app)
-        .post('/users/login')
-        .send({
-          username: 'henry',
-          password: 'johnson123',
-        })
-        .auth('henry', 'johnson123')
-        .expect(200)
-        .expect('Content-Type', /json/)
-        .then(function(res) {
-        cookie = res.headers['set-cookie'];
-        });
+    beforeEach(function () {
+        return tester(app)
+            .post('/users/login')
+            .send({
+                username: 'henry',
+                password: 'johnson123',
+            })
+            .auth('henry', 'johnson123')
+            .expect(200)
+            .expect('Content-Type', /json/)
+            .then(function (res) {
+                cookie = res.headers['set-cookie'];
+            });
     });
 
- describe('GET resource for searching', function () {  
-        it('should return a search query', function () {  
-             Transcriptions.on('index', function (err) {
-            if (err) {
-                console.error('User index error: %s', err);
-            } else {
-                console.info('User indexing complete');
-            }
-        });
+    after(function () {
+        return closeServer();
+    });
+
+
+
+    describe('GET resource for searching', function () {
+        it('should return a search query', function () {
+            Transcriptions.on('index', function (err) {
+                if (err) {
+                    console.error('User index error: %s', err);
+                } else {
+                    console.info('User indexing complete');
+                }
+            });
             const query = 'great';
             return tester(app)
                 .post('/transcriptions/search')
                 .set('cookie', cookie)
-                .send({search: query})
-                .then(function (res) {  
+                .send({
+                    search: query
+                })
+                .then(function (res) {
                     res.should.have.status(200);
                     res.should.be.json;
                     res.body.should.be.a('array');
@@ -162,29 +165,29 @@ let cookie;             //need a cookie to be passed between each test so that
                         searchResult.should.include.keys('name', 'uploadedBy', 'docText', 'date', 'dateUploaded', 'sessionNumber');
                     });
                 })
-            })
+        })
     })
 
     describe('GET Resource', function () {
-    it('should get all transcriptions', function () {  
-        let response;
-        return tester(app)
-                    .get('/transcriptions')
-                    .set('cookie', cookie)
-                    .then(function (res) {
-                        res.should.have.status(200);
-                        res.should.be.json;
-                        res.body.should.have.length.of.at.least(1);
-                        response = res;
-                        return Transcriptions.count();
-                    })
-                    .then(count => { 
-                        response.body.should.have.length.of(count);                        
-                    })
-                    .catch(err => console.error(err));  
-    })
+        it('should get all transcriptions', function () {
+            let response;
+            return tester(app)
+                .get('/transcriptions')
+                .set('cookie', cookie)
+                .then(function (res) {
+                    res.should.have.status(200);
+                    res.should.be.json;
+                    res.body.should.have.length.of.at.least(1);
+                    response = res;
+                    return Transcriptions.count();
+                })
+                .then(count => {
+                    response.body.should.have.length.of(count);
+                })
+                .catch(err => console.error(err));
+        })
 
-   
+
         it('should return transcriptions with the right fields', function () {
             let resTranscription;
             return tester(app)
@@ -202,17 +205,17 @@ let cookie;             //need a cookie to be passed between each test so that
                     resTranscription = res.body[0].id;
                     trans = res.body[0];
                     return Transcriptions.findById(resTranscription)
-                    .then(function (item) {
+                        .then(function (item) {
                             item.id.should.equal(trans.id);
                             item.name.should.equal(trans.name);
                             item.sessionNumber.should.equal(trans.sessionNumber);
                         });
-                    });
                 });
         });
+    });
 
-    describe('GET resource for individual user', function () {  
-        it('should get transcriptions that the user uploaded', function () {  
+    describe('GET resource for individual user', function () {
+        it('should get transcriptions that the user uploaded', function () {
             let resTranscription;
             return tester(app)
                 .get('/transcriptions/henry')
@@ -229,12 +232,12 @@ let cookie;             //need a cookie to be passed between each test so that
                     resTranscription = res.body.transcriptions[0].id;
                     trans = res.body.transcriptions[0];
                     return Transcriptions.findById(resTranscription)
-                    .then(function (item) {
+                        .then(function (item) {
                             item.id.should.equal(trans.id);
                             item.name.should.equal(trans.name);
                             item.sessionNumber.should.equal(trans.sessionNumber);
                         });
-                    });
+                });
         })
     })
 
@@ -242,7 +245,7 @@ let cookie;             //need a cookie to be passed between each test so that
     describe('POST resource for transcriptions', function () {
         it('Should insert a transciption in the databse on POST', function () {
             newTranscription = {
-                projectName: "wierd",
+                projectName: 'wierd',
                 name: 'John Doe',
                 date: '12/12/12',
                 sessionNumber: '2',
@@ -266,7 +269,7 @@ let cookie;             //need a cookie to be passed between each test so that
                     res.body.uploadedBy.should.equal(newTranscription.uploadedBy);
                     res.body.sessionNumber.toString().should.equal(newTranscription.sessionNumber);
                     return Transcriptions.findById(res.body.id)
-                    .exec();
+                        .exec();
                 })
                 .then(function (transcription) {
                     transcription.name.should.equal(newTranscription.name);
@@ -307,10 +310,10 @@ let cookie;             //need a cookie to be passed between each test so that
         });
     });
 
- describe('GET resource for transcription download', function () {
+    describe('GET resource for transcription download', function () {
         it('Should download a document on GET', function () {
             let newTranscription = {
-                projectName: "wierd",
+                projectName: 'wierd',
                 name: 'John Doe',
                 date: '12/12/12',
                 sessionNumber: '2',
@@ -326,26 +329,28 @@ let cookie;             //need a cookie to be passed between each test so that
                 .attach('file', './uploads/test.txt')
                 .then((res1) => {
                     return tester(app)
-                    .get(`/transcriptions/download/${res1.body.name}`)
-                    .set('cookie', cookie)
-                    .send({project: `${res1.body.project}`})
-                    .then((res) => {
-                        res.should.have.status(200);
-                    })
+                        .get(`/transcriptions/download/${res1.body.name}`)
+                        .set('cookie', cookie)
+                        .send({
+                            project: `${res1.body.project}`
+                        })
+                        .then((res) => {
+                            res.should.have.status(200);
+                        })
                 });
         });
     });
 
-    describe('DELETE resource for transcriptions', function() {
+    describe('DELETE resource for transcriptions', function () {
         it('Should remove transcriptions on DELETE', function () {
             let transcriptionTD;
             return Transcriptions
                 .findOne()
-                .then(function (transcription)  {
+                .then(function (transcription) {
                     transcriptionTD = transcription;
                     return tester(app).delete(`/transcriptions/${transcriptionTD.id}`);
                 })
-                .then(function(res) {
+                .then(function (res) {
                     res.should.have.status(204);
                     return Transcriptions.findById(transcriptionTD.id);
                 })

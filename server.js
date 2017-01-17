@@ -1,15 +1,15 @@
 require('@risingstack/trace'); //tool for debugging node apps
-const {BasicStrategy} = require('passport-http');
+
 const passport = require('passport');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const {router: usersRouter}  = require('./users');
 const mongoose = require('mongoose');
-const {router: transRouter} = require('./trans-router')
 const express = require('express');
 const User = require('./users/user-models');
-
+const {router: usersRouter}  = require('./users');
+const {router: transRouter} = require('./trans-router')
+const {BasicStrategy} = require('passport-http');
 
 
 mongoose.Promise = global.Promise;
@@ -34,7 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-//passport authorization functions
+// passport authorization functions
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });

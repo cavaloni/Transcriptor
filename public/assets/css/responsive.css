@@ -1,0 +1,46 @@
+@media only screen and (min-width: 335px) and (max-width: 500px) {
+    .js-first-search-button{
+        margin-left: 50%;
+    }
+    .trans-search {
+        position: relative;
+        top: 245px;
+        z-index: -1;
+    }
+    
+
+    div[class^="search-results-box"] {
+        height: 475px;
+    }
+
+    .search-from {
+        display: inline-block;
+    }
+
+    .recent {
+        width: 80%;
+    }
+
+    .download-doc {
+         position: absolute;
+        top: 310px;
+        left: 40%;
+    }
+    /* CSS access for javascript to know media query*/
+    .reference {
+        height: 475px;
+    }
+
+}
+
+@media all and (max-width: 330px) {
+     div[class^="search-results-box"] {
+        height: 490px;
+    }
+
+    .trans-search {
+        margin-top: 20px;
+        float: right;
+    }
+
+}

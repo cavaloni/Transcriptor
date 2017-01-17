@@ -1,4 +1,3 @@
-
 const express = require('express');
 const jsonParser = require('body-parser').json();
 const passport = require('passport');
@@ -29,7 +28,7 @@ router.post('/', function (req, res) {
         });
     }
 
-    var username = req.body.username;
+    const username = req.body.username;
 
     if (typeof username !== 'string') {
         return res.status(422).json({
@@ -45,7 +44,7 @@ router.post('/', function (req, res) {
         });
     }
 
-    var password = req.body.password;
+    const password = req.body.password;
 
     if (!('password' in req.body)) {
         return res.status(422).json({
@@ -73,7 +72,7 @@ router.post('/', function (req, res) {
         });
     }
 
-    var project = req.body.project;
+    const project = req.body.project;
 
     if (!(project) in req.body) {
         return res.status(422).json({

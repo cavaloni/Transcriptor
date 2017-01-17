@@ -119,7 +119,7 @@ router.get('/:userid', isAuthenticated,
             })
             .catch(err => {
                 console.log(err);
-            })
+            });
     });
 
 //endpoint to download document files that have been uploaded
@@ -136,7 +136,7 @@ router.get('/download/:name', isAuthenticated,
             })
             .catch(err => {
                 console.log(err);
-            })
+            });
     });
 
 //Endpoint to post new transcriptions and uploade document
@@ -221,7 +221,7 @@ router.post('/:id', isAuthenticated, upload.any(),
             }).then(() => {
                 update[filepath] = thisfilepath;
                 update[docText] = thisdocText;
-            })
+            });
         }
 
         Transcriptions
