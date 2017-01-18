@@ -479,7 +479,7 @@ div[class^="search-results-box"] {
     display: inline-block;
     margin-top: 25px;
     width: 20%;
-    height: 100%;
+    height: 150px;
     float: right;
     text-align: center;
     font-weight: bold;

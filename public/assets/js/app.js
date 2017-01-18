@@ -255,7 +255,7 @@ function renderResults(results) {
             renderResultsBoxes();       //Recursive call once animation is done
         });
     };
-    $('.recent').on('click', '.download-icon', function () { //listen for download click
+    $('.recent').on('click', '.download-doc', function () { //listen for download click
         let nameOfSession = $(this).attr('id');
         getDocument(nameOfSession);
     });
