@@ -23,7 +23,7 @@ router.post('/', function (req, res) {
         });
     }
 
-    const username = req.body.username;
+    var username = req.body.username;
 
     if (typeof username !== 'string') {
         return res.status(422).json({
@@ -39,7 +39,7 @@ router.post('/', function (req, res) {
         });
     }
 
-    const password = req.body.password;
+    var password = req.body.password;
 
     if (!('password' in req.body)) {
         return res.status(422).json({
@@ -67,7 +67,7 @@ router.post('/', function (req, res) {
         });
     }
 
-    const project = req.body.project;
+    var project = req.body.project;
 
     if (!(project) in req.body) {
         return res.status(422).json({
