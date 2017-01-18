@@ -1,0 +1,30 @@
+quotes
+responsive
+error handling from server (best is upload)
+
+semi-colons
+
+use double quotes always for html
+
+clea unused images
+
+delete log files from git
+
+------
+
+
+set login required
+
+fix 404 response
+
+'download document' needs to be clickable
+
+padding on 'upload'
+
+change 'sign-up' button to be more visible
+
+change readme to README
+
+'etag' in server
+
+line 129 of users-router res-redirect problem

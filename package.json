@@ -9,7 +9,6 @@
   "author": "Chad Avalon",
   "license": "ISC",
   "dependencies": {
-    "@risingstack/trace": "^3.0.2",
     "bcryptjs": "^2.4.0",
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",

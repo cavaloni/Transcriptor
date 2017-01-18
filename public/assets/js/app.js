@@ -69,14 +69,16 @@ function loginUser(username, password) {
             renderDash();
         })
         .fail(function (err) {
-            renderFailedLogin();
+            parsedErrMsg = JSON.parse(err.responseText);
+            errMsg = parsedErrMsg.message;
+            renderFailedLogin(errMsg);
         });
 }
 
-function renderFailedLogin () {  
+function renderFailedLogin (errMsg) {  
     if (!state.invalidLogin) {
         let incorrectAlert = `<div class="incorrect">
-        Incorrect Username/Password</div>`
+        ${errMsg}</div>`
         $('.signin-box').append(incorrectAlert);
         state.invalidLogin = true
     }
@@ -214,6 +216,7 @@ function renderResults(results) {
         let dateupload = dater[0];              //
         return `
         <div class="search-results-box${counter}" id="${counter}">
+        <div class="admin${counter}">Admin</div>
         <div class="info">
         <div class="info-line s-name"><span id="first-word">Name of Session: </span>${data.name}</div>
         <div class="info-line "><span id="first-word">Session Number: </span>${data.sessionNumber}</div>
@@ -221,7 +224,7 @@ function renderResults(results) {
         <div class="info-line"><span id="first-word">Uploaded By: </span>${data.uploadedBy}</div>
         <div class="info-line"><span id="first-word">Date Uploaded: </span>${dateupload}</div> 
         </div>
-        <div class="snippet"><span id="first-word">Preview: </span>${text}<div class="admin${counter}">Admin</div></div>  
+        <div class="snippet"><span id="first-word">Preview: </span>${text}</div>  
         <div class="download-doc"><div class="download-icon" id="${counter}"></div>Download Document</div>
         </div>
         </div>`

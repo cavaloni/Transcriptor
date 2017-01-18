@@ -8,12 +8,7 @@ const User = require('./user-models');
 
 const router = express.Router();
 
-
-
 router.use(jsonParser);
-
-
-
 
 //------New user
 router.post('/', function (req, res) {
@@ -127,15 +122,26 @@ router.post('/', function (req, res) {
         });
 });
 
-router.post('/login', function(req, res, next) {
-  passport.authenticate('basic', function(err, user, info) {
-    if (err) { return console.log('Error authenticating user'); }
-    if (!user) { return res.redirect('/login'); }
-    req.logIn(user, function(err) {
-      if (err) { return console.log('Error authenticating user'); }
-      return res.status(200).json({project: user.project});
-    });
-  })(req, res, next);
+router.post('/login', function (req, res, next) {
+    //insert if statements to check if there is enough
+    passport.authenticate('basic', function (err, user, info) {
+        if (err) {
+            return console.log('Error authenticating user');
+        }
+        if (!user) {
+            return res.status(401).json({
+                message: 'Username/Password Incorrect'
+            });
+        } //res.redirect redirects to a non-existing page
+        req.logIn(user, function (err) {
+            if (err) {
+                return console.log('Error authenticating user');
+            }
+            return res.status(200).json({
+                project: user.project
+            });
+        });
+    })(req, res, next);
 });
 
 

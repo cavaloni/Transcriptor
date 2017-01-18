@@ -9,7 +9,7 @@ const tester = require('supertest-as-promised').agent;
 const superagent = require('superagent');
 const agent = superagent.agent();
 const {app, runServer, closeServer} = require('../server');
-const {Transcriptions} = require('../models');
+const {Transcriptions} = require('../transcriptions/models');
 const {User} = require('../users/index.js');
 
 chai.use(chaiHttp);
@@ -37,7 +37,7 @@ function seedUser() {
     console.log('seeding user data');
     const salt = bcrypt.genSaltSync();
     const hash = bcrypt.hashSync('johnson123', salt);
-    let user ={
+    let user = {
             username: 'henry',
             password: hash,
             project: 'wierd'
@@ -79,8 +79,8 @@ function generateControlTranscriptionData() {
 
 function seedTransData() {
     console.log('seeding transcription data');
-    const seedData = [];                                    //need a predictable piece of data for certain search tests
-    let controlData = generateControlTranscriptionData();   //
+    const seedData = [];                                    // need a predictable piece of data for certain search tests
+    let controlData = generateControlTranscriptionData();   
 
     for (let i = 0; i <= 10; i++) {
         seedData[i] = generateTranscriptionData();
@@ -102,8 +102,8 @@ function tearDownDB() {
 
 describe('Transcriptor API resource', function () {
 
-    let cookie; //need a cookie to be passed between each test so that
-    //Authentication passes on protected endpoints
+    let cookie; // need a cookie to be passed between each test so that
+                // Authentication passes on protected endpoints
     before(function () {
         return runServer();
     });
@@ -138,8 +138,6 @@ describe('Transcriptor API resource', function () {
     after(function () {
         return closeServer();
     });
-
-
 
     describe('GET resource for searching', function () {
         it('should return a search query', function () {
@@ -186,7 +184,6 @@ describe('Transcriptor API resource', function () {
                 })
                 .catch(err => console.error(err));
         })
-
 
         it('should return transcriptions with the right fields', function () {
             let resTranscription;
@@ -240,7 +237,6 @@ describe('Transcriptor API resource', function () {
                 });
         })
     })
-
 
     describe('POST resource for transcriptions', function () {
         it('Should insert a transciption in the databse on POST', function () {

@@ -1,5 +1,3 @@
-require('@risingstack/trace'); //tool for debugging node apps
-
 const passport = require('passport');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -8,7 +6,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const User = require('./users/user-models');
 const {router: usersRouter}  = require('./users');
-const {router: transRouter} = require('./trans-router')
+const {router: transRouter} = require('./transcriptions/trans-router')
 const {BasicStrategy} = require('passport-http');
 
 
@@ -17,8 +15,6 @@ mongoose.Promise = global.Promise;
 const app = express();
 
 const {PORT, DATABASE_URL} = require('./config');
-
-app.disable('etag');
 
 app.use(express.static('public'));
 
@@ -72,8 +68,7 @@ app.use('/users/', usersRouter);
 passport.use(basicStrategy);
 app.use('/transcriptions', transRouter);
 
-let server; //Define server here so that the same instance of server
-            //is accessible in both functions
+let server; // Define server here so that the same instance of server is accessible in both functions
 
 function runServer () { 
     return new Promise((resolve, reject) => {
@@ -96,7 +91,7 @@ function runServer () {
 function closeServer () {
     return mongoose.disconnect().then(() => {
         return new Promise((resolve, reject) => {
-            console.log("closing server");
+            console.log('closing server');
             server.close(err => {
                 if (err) {
                     return reject(err);

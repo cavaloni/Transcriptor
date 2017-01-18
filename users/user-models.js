@@ -3,7 +3,7 @@ const passport = require('passport');
 const BasicStrategy = require('passport-http').BasicStrategy;
 const bcrypt = require('bcryptjs') ;
 
-const  UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true,
@@ -32,10 +32,6 @@ UserSchema.statics.hashPassword = function(password) {
     .then(hash => hash);
 }
 
-
-
 const User = mongoose.model('User', UserSchema);
-
-
 
 module.exports = User;

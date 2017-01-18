@@ -1,11 +1,6 @@
 language: node_js
 node_js: node
 addons:
-  artifacts:
-    s3_region: "us-west-1"
-    paths: 
-      $HOME/uploads/
-    debug: true
   apt:
     sources:
       - mongodb-upstart

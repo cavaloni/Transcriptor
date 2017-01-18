@@ -33,14 +33,35 @@
 
 }
 
-@media all and (max-width: 330px) {
+@media only screen and (max-width: 330px) {
      div[class^="search-results-box"] {
-        height: 490px;
+        height: 720px;
     }
 
     .trans-search {
         margin-top: 20px;
         float: right;
+    }
+
+     .reference {
+        height: 720px;
+    }
+
+    .download-doc {
+        display: inline-block;
+        float: none;
+    }
+
+    .snippet {
+        height: 504px;
+    }
+
+    .delete {
+        left: 8%;
+    }
+
+    .update {
+        right: 8%;
     }
 
 }
