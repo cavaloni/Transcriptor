@@ -1,6 +1,6 @@
 const {BasicStrategy} = require('passport-http');
 const express = require('express');
-const {Transcriptions} = require('./models');
+const {Transcriptions} = require('./trans-models');
 const User = require('../users/user-models');
 const session = require('express-session');
 const multer = require('multer');

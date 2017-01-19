@@ -176,6 +176,7 @@ function renderRecent(results) {
     let results1 = results;
     $('.recent').empty();
     $('.recent').append('<div class="recent-view">Recent Uploads</div>');
+    $('.search-bar').addClass('hidden');
     renderResults(results1);
 }
 
@@ -404,7 +405,7 @@ function updateDocument(session) {
         <br>
         <input id="date" type="date" name="date" placeholder="New Date (if any)">
         <br>
-        <input id="sessionnumber" type="text" name="sessionNumber" placeholder="New Session Number (if any)">
+        <input id="sessionnumber" type="number" name="sessionNumber" placeholder="New Session Number (if any)">
         <br>
         <input id="wordFile" type="file" name="docUpload" placeholder="New File Doc">
         <br>
@@ -461,9 +462,9 @@ function renderUploadBox() {
         <form enctype="multipart/form-data" action="/transcriptions/upload/${state.loggedIn}" method="post" id="submission-box-form">
         <input id="talkname" type="text" name="name" placeholder="Name of Session" required>
         <br>
-        <input id="date" type="text" name="date" placeholder="Date of Recording" required>
+        <input id="date" type="date" name="date" placeholder="Date of Recording" required>
         <br>
-        <input id="sessionnumber" type="text" name="sessionNumber" placeholder="Session Number" required>
+        <input id="sessionnumber" type="number" name="sessionNumber" placeholder="Session Number" required>
         <br>
         <input id="wordFile" type="file" name="docUpload" required>
         <br>

@@ -325,11 +325,11 @@
 }
 
 #searchterm {
-    padding: 10px;
+    padding: 8px;
     font-family: 'News Cycle', sans-serif;
     border: 2px solid lightgray;
     border-radius: 20px;
-    font-size: 18px;
+    font-size: 16px;
     margin-left: 35%;
     margin-bottom: 10px;
 }
@@ -364,6 +364,7 @@
     background-color: rgb(240, 240, 240);
 }
 
+
 .help-box {
     line-height: 30px;
 }
@@ -379,12 +380,14 @@
 }
 
 #submission-box-form>input {
+    box-sizing: border-box;
+    padding: 5px;
     border-radius: 4px;
     border: none;
     background-color: darkgray;
     box-shadow: 1px 1px 3px inset;
     margin-top: 20px;
-    font-size: 18px;
+    font-size: 17px;
     width: 100%;
 }
 
