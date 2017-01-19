@@ -17,7 +17,7 @@ function checkHeight() {
 }
 
 //Initial Event Listeners
-$('.sign-in-button').click(function (e) {
+$('.sign-in-form').on('submit', function (e) {
     e.preventDefault();
     var username =  $('#email').val();
     var password = $('#password').val();
@@ -103,7 +103,8 @@ function renderSignUpPage() {
         </div>`
     $('.body-wrapper').append('<div id="wave"/><div/>')
     $('.sign-up-page').append(signUpPage);
-    $('.sign-up-page').on('click', '.new-sign-in-button', function () {
+    $('.sign-up-page').on('submit', '.sign-up-form', function () {
+        console.log('in here');
         $('#wave').remove();
         handleNewUser();
     });
@@ -225,7 +226,7 @@ function renderResults(results) {
         <div class="info-line"><span id="first-word">Date Uploaded: </span>${dateupload}</div> 
         </div>
         <div class="snippet"><span id="first-word">Preview: </span>${text}</div>  
-        <div class="download-doc"><div class="download-icon" id="${counter}"></div>Download Document</div>
+        <div class="download-doc" id="${counter}"><div class="download-icon"></div>Download Document</div>
         </div>
         </div>`
     });
@@ -375,7 +376,9 @@ function renderPopUp (message, callback, noCancel) {
             $('.help-box-wrapper').remove();
         });
         $('body').off('click', '.ok')
-        callback();
+        if (callback){
+            callback();
+        }
     });
     $('body').on('click', 'cancel', function () { 
         $('.help-box-wrapper').animate({
@@ -456,15 +459,15 @@ function renderUploadBox() {
     let uploadBox = `<div class="submission-box-wrapper">
         <div class="submission-box">Upload Transcription
         <form enctype="multipart/form-data" action="/transcriptions/upload/${state.loggedIn}" method="post" id="submission-box-form">
-        <input id="talkname" type="text" name="name" placeholder="Name of Session">
+        <input id="talkname" type="text" name="name" placeholder="Name of Session" required>
         <br>
-        <input id="date" type="text" name="date" placeholder="Date of Recording">
+        <input id="date" type="text" name="date" placeholder="Date of Recording" required>
         <br>
-        <input id="sessionnumber" type="text" name="sessionNumber" placeholder="Session Number">
+        <input id="sessionnumber" type="text" name="sessionNumber" placeholder="Session Number" required>
         <br>
-        <input id="wordFile" type="file" name="docUpload">
+        <input id="wordFile" type="file" name="docUpload" required>
         <br>
-        <input type="submit" value="Submit" id="submit-upload">
+        <input type="submit" value="Submit" id="submit-upload" required>
         </form>
         <div id="cancel-upload">Cancel</div>
         </div>

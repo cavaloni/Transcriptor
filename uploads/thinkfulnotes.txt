@@ -28,3 +28,8 @@ change readme to README
 'etag' in server
 
 line 129 of users-router res-redirect problem
+
+------
+
+react async challenge:
+cant figure out server response not sending back json

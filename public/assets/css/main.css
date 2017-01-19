@@ -211,6 +211,8 @@
 /*Navigation elements*/
 
 .nav-bar {
+    position: relative;
+    z-index: 2;
     margin-top: 40px;
     float: left;
     text-align: left;
@@ -487,6 +489,7 @@ div[class^="search-results-box"] {
     float: right;
     text-align: center;
     font-weight: bold;
+    cursor: pointer;
 }
 
 .download-icon {
@@ -494,10 +497,6 @@ div[class^="search-results-box"] {
     height: 60px;
     width: 60px;
     background-image: url("../img/file.png");
-}
-
-.download-icon {
-    cursor: pointer;
 }
 
 /*Admin functions box extension*/
