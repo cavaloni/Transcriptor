@@ -9,7 +9,7 @@ const tester = require('supertest-as-promised').agent;
 const superagent = require('superagent');
 const agent = superagent.agent();
 const {app, runServer, closeServer} = require('../server');
-const {Transcriptions} = require('../transcriptions/models');
+const {Transcriptions} = require('../transcriptions/trans-models');
 const {User} = require('../users/index.js');
 
 chai.use(chaiHttp);
