@@ -103,8 +103,8 @@ function renderSignUpPage() {
         </div>`
     $('.body-wrapper').append('<div id="wave"/><div/>')
     $('.sign-up-page').append(signUpPage);
-    $('.sign-up-page').on('submit', '.sign-up-form', function () {
-        console.log('in here');
+    $('.sign-up-page').on('submit', '.sign-up-form', function (e) {
+        (e).preventDefault();
         $('#wave').remove();
         handleNewUser();
     });
@@ -137,7 +137,7 @@ function handleNewUser() {
         })
         .fail(function (err) {
             let errMessage = JSON.parse(err.responseText);
-            renderPopUp(`${errMessage.message}`, null, 'true');
+            renderPopUp(`${errMessage.message}`, null, true);
         });
 }
 
@@ -197,7 +197,7 @@ function renderMyUploads() {
             renderResults(results1)
         })
         .fail(function (err) {
-            renderPopUp('cannot get results for user:' + err, 'true');
+            renderPopUp('cannot get results for user:' + err, null, true);
         });
 }
 
@@ -345,7 +345,7 @@ function deleteDocument(session) {
                 
             })
             .fail(function (err) {
-                renderPopUp(`Something went wrong: ${errorMessage}`, null, 'true');
+                renderPopUp(`Something went wrong: ${errorMessage}`, null, true);
             });
     }
 }
@@ -363,7 +363,7 @@ function renderPopUp (message, callback, noCancel) {
         </div>
         </div>`
     $('body').append(popup);
-    if (noCancel === 'true') {          //no cancel button needed to update and upload notification
+    if (noCancel) {          //no cancel button needed to update and upload notification
         $('.cancel').addClass('hidden');
     }
     $('.help-box-wrapper').animate({
@@ -444,10 +444,10 @@ function updateDocument(session) {
                 $('.submission-box-wrapper').promise().done(() => {
                     $('.submission-box-wrapper').remove();
                 });
-                renderPopUp('Transcription Updated', getRecentTranscripts, 'true')      //notify of successful completion
+                renderPopUp('Transcription Updated', getRecentTranscripts, true)      //notify of successful completion
             },
             error: function (jqXHR, textStatus, errorMessage) {
-                renderPopUp(`Something went wrong: ${errorMessage}`, updateDocument, 'true') //and of error
+                renderPopUp(`Something went wrong: ${errorMessage}`, updateDocument, true) //and of error
             }
         });
     });
@@ -502,7 +502,7 @@ function renderUploadBox() {
                 $('.submission-box-wrapper').promise().done(() => {
                     $('.submission-box-wrapper').remove();
                 });
-                renderPopUp('Transcription Uploaded', getRecentTranscripts, 'true');
+                renderPopUp('Transcription Uploaded', getRecentTranscripts, true);
             },
             error: function (jqXHR, textStatus, errorMessage) {
                 renderPopUp(`Something went wrong: ${errorMessage}`);
@@ -562,8 +562,7 @@ function getSearchResults (searchTerm) {
         renderSearchResults(results);
     })
     .fail(function (err) {  
-        alert('Server connection failed');
-        console.log(err);
+        renderPopUp('Server connection failed', null, true);
     });
 }
 
@@ -582,8 +581,7 @@ function getRecentTranscripts () {
         renderRecent(results);
     })
     .fail(function (err) {  
-        alert('Server problem');
-        console.log(err);
+        renderPopUp('Server problem', null, true);
     });
 }
 

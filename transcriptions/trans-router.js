@@ -36,12 +36,10 @@ function getProjectName(user) {
         })
         .exec()
         .then(_user => {
-            console.log(_user);
             project = _user.project
         }).catch(function (err) {
             console.log(err);
         });
-    console.log(project);
     return project
 }
 
@@ -189,7 +187,6 @@ router.post('/upload/:id', isAuthenticated, upload.any(), (req, res) => {
 //updater for transcripions
 router.post('/:id', isAuthenticated, upload.any(),
     (req, res) => {
-        console.log(req.body);
         if (!(req.params.id === req.body.id)) {
             res.status(400).json({
                 error: 'Request path id and request body id values must match'

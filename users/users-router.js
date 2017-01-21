@@ -123,7 +123,6 @@ router.post('/', function (req, res) {
 });
 
 router.post('/login', function (req, res, next) {
-    //insert if statements to check if there is enough
     passport.authenticate('basic', function (err, user, info) {
         if (err) {
             return console.log('Error authenticating user');
@@ -132,7 +131,7 @@ router.post('/login', function (req, res, next) {
             return res.status(401).json({
                 message: 'Username/Password Incorrect'
             });
-        } //res.redirect redirects to a non-existing page
+        }
         req.logIn(user, function (err) {
             if (err) {
                 return console.log('Error authenticating user');
