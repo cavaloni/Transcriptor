@@ -34,7 +34,7 @@
     background: #FFFFFF;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
     position: absolute;
-    top: 34%;
+    top: 33%;
     left: calc(50% - 155px);
     height: 280px;
     width: 310px;
@@ -120,11 +120,13 @@
     font-family: 'Comfortaa', cursive;
     font-weight: bolder;
     color: blue;
-    position: relative;
-    top: 40px;
+    top: 80px;
     text-align: center;
     padding: 10px;
     border-bottom: solid 1px aliceblue;
+    width: 200px;
+    position: absolute;
+    left: calc(50% - 100px);
 }
 
 .sign-up:hover {
@@ -192,6 +194,44 @@
     background-size: 50%, cover;
     background-repeat: no-repeat;
     font-weight: bold;
+}
+
+
+.initial-icon-conatiner {
+  font-size:0
+}
+
+.initial-box-icon1, .initial-box-icon2, .initial-box-icon3 {
+  float: left;
+  margin: 0 auto;
+  display: inline-block;
+  width: 33%;
+  height: 130px;
+  font-size: 18px;
+  font-family: 'Julius Sans One', sans-serif;
+}
+
+.initial-icon1, .initial-icon2, .initial-icon3 {
+    vertical-align: top;
+    height: 55px;
+    width: 55px;
+    margin: 20px auto;
+    
+}
+
+.initial-icon1 {
+    background: url('../img/edit.png');
+    background-size: cover;
+}
+
+.initial-icon2 {
+    background: url('../img/monitor.png');
+    background-size: cover;
+}
+
+.initial-icon3 {
+    background: url('../img/loupe.png');
+    background-size: cover;
 }
 
 /*The "Dashboard" bar*/
