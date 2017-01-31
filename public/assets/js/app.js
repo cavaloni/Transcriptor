@@ -181,6 +181,7 @@ function renderRecent(results) {
 }
 
 function renderMyUploads() {
+    $('.search-bar').addClass('hidden');
     user = state.loggedIn;
     $.ajax({
             type: 'GET',
