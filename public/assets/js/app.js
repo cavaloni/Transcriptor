@@ -141,9 +141,9 @@ function handleNewUser() {
         });
 }
 
-//
+
 //Initial "Dash" rendering function
-//
+
 function renderDash () {  
     $('.sign-up-page').remove();
     $('.sub-heading').remove();
