@@ -268,6 +268,7 @@ describe('Transcriptor API resource', function () {
                         .exec();
                 })
                 .then(function (transcription) {
+                    console.log(transcription);
                     transcription.name.should.equal(newTranscription.name);
                     transcription.uploadedBy.should.equal(newTranscription.uploadedBy);
                     transcription.sessionNumber.toString().should.equal(newTranscription.sessionNumber);
