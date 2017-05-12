@@ -504,9 +504,8 @@ div[class^="search-results-box"] {
     opacity: 0;
     margin: 20px;
     overflow: hidden;
-    font-size: 14px;
+    font-size: 15px;
     line-height: 22px;
-    font-family: Tinos, serif;
     width: 100%;
     border-bottom: 1px solid #ab670f;
     opacity: 1;
