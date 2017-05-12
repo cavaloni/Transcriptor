@@ -146,6 +146,7 @@ function handleNewUser() {
 //
 function renderDash () {  
     $('.sign-up-page').remove();
+    $('.sub-heading').remove();
     $('.app-wrapper').removeClass('hidden');
     $('.logged-in').text(`Hello, ${state.loggedIn}`);
     getRecentTranscripts();

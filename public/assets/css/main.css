@@ -8,7 +8,7 @@
     width: 100%;
     height: 100%;
     position: fixed;
-    background: linear-gradient(to right, #F6F7F2, #E0E4CC);
+    background: linear-gradient(to right, #F6F7F2, #ffffff);
     overflow: scroll;
 }
 
@@ -116,11 +116,23 @@
     margin-top: 30px;
 }
 
+.sub-heading {
+    color: darkslategray;
+    font-family: News Cycle;
+    text-align: center;
+    z-index: 3;
+    background: none;
+    height: 80px;
+    position: relative;
+    top: 77px;
+    font-size: 20px;
+}
+
 .sign-up {
     font-family: 'Comfortaa', cursive;
     font-weight: bolder;
     color: blue;
-    top: 24%;
+    top: 78%;
     text-align: center;
     padding: 10px;
     border-bottom: solid 1px aliceblue;
@@ -490,16 +502,15 @@ form {
 div[class^="search-results-box"] {
     position: relative;
     opacity: 0;
-    box-shadow: 1px 1px 10px;
     margin: 20px;
-    background-color: white;
     overflow: hidden;
     font-size: 14px;
     line-height: 22px;
-    font-family: 'Tinos', serif;
+    font-family: Tinos, serif;
     width: 100%;
-    height: 75px;
-    border-radius: 3px;
+    border-bottom: 1px solid #ab670f;
+    opacity: 1;
+    height: 180px;
 }
 
 #first-word {
@@ -526,7 +537,7 @@ div[class^="search-results-box"] {
 
 .download-doc {
     display: inline-block;
-    margin-top: 25px;
+    margin-top: 10px;
     width: 20%;
     height: 150px;
     float: right;
@@ -545,17 +556,16 @@ div[class^="search-results-box"] {
 /*Admin functions box extension*/
 
 [class^=admin] {
-    position: absolute;
     bottom: -5px;
     font-weight: bolder;
     background-color:whitesmoke;
     width: 100px;
+    z-index: 99;
+    position: relative;
     text-align: center;
     color: #FF6766;
-    border-radius: 5px;
-    left: calc(50% - 50px);
-    box-shadow: 0px 2px 6px black inset;
-    z-index: 99;
+    margin: 0;
+    float: right;
 }
 
 [class^=admin]:hover {
